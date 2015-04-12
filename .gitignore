@@ -1,3 +1,7 @@
-# Ignore our .o and .exe files.
-*.exe
+# Ignored
+/server/server #Server exe
+/client/test-client/client #CLient exe
+
 *.o
+*.so
+*.exe
