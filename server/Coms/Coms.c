@@ -1,4 +1,5 @@
 #include "Coms.h"
+#include "Protocol.h"
 
 
 int NumClients = 0;       //Current Number of clients connected
@@ -18,11 +19,13 @@ void AcceptClients(int Serverfd)
   int NewClientfd = 0;
   Client_t NewClient;
   socklen_t Clilen;
+  unsigned char Buffer[5];
+  unsigned char *ptr_Buffer = Buffer;
+
+  printf("> Waiting for clients... (%d / %d)\n", NumClients, MAX_CLIENTS);
 
   while(NumClients < MAX_CLIENTS)
   {
-    printf("> Waiting for clients... (%d / %d)\n", GetNumClients(), MAX_CLIENTS);
-
     //Accept gets a connection from the client, saving a new file descriptor, checking for errors once more.
     Clilen = sizeof(Cli_addr);
     NewClientfd = accept(Serverfd, (struct sockaddr *) &Cli_addr, &Clilen);
@@ -32,7 +35,7 @@ void AcceptClients(int Serverfd)
       //Fills out new Client_t struct with the data we require
       struct sockaddr_in addr_in = (struct sockaddr_in)Cli_addr;
       char *IP = inet_ntoa(addr_in.sin_addr);
-      NewClient.id = NumClients++;
+      NewClient.id = NumClients;
       NewClient.fd = NewClientfd;
       NewClient.IP = IP;
 
@@ -40,7 +43,11 @@ void AcceptClients(int Serverfd)
       NumClients++;
 
       printf("> New Client (%d): %s\n", NumClients, IP);
-      SendMsg(NewClient.fd, "Welcome to Risk");
+      EncodeMessage(ptr_Buffer, STATUS_OK, CODE_DATA);
+      Buffer[1] = (unsigned char)NewClient.id;
+      SendMsg(NewClient, Buffer);
+
+      printf("> Waiting for clients... (%d / %d)\n", NumClients, MAX_CLIENTS);
     }
   }
 }
@@ -61,31 +68,27 @@ void CloseAllClients()
  *  Sends given message to all clients
  *  NOTE: When boradcasting over localhost, server broadcasts to itself.
  */
-void BroadcastMsg(char* Msg)
+void BroadcastMsg(unsigned char Msg[])
 {
   int i = 0;
   for(i = 0; i <= MAX_CLIENTS; i++)
   {
-    SendMsg(Clients[i].fd, Msg);
+    SendMsg(Clients[i], Msg);
   }
 }
 
 
 /* SendMsg
  *  Send message to given client
- *
- * TODO Fix FD to be the ID and convert the ID to FD for send
  */
-int SendMsg(int Clientfd, char* Msg)
+int SendMsg(Client_t Client, unsigned char Msg[])
 {
-  char Buffer[256];
-  strcpy(Buffer, Msg);
   int n = 0;
 
-  n = write(Clientfd,Buffer,strlen(Buffer));
+  n = write(Client.fd,Msg,5);
   if (n < 0)
   {
-    printf("ERROR> Couldn't send messge to Client (%d)\n", Clientfd);
+    printf("ERROR> Couldn't send messge to Client (%d)\n", Client.id);
   }
   return n;
 }

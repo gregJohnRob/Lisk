@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     struct hostent *server;         //Pointer to server description struct
 
     //Checking CLI args for host and port
-    char buffer[256];
+    unsigned char buffer[256];
     if (argc < 3)
     {
        error("usage: client hostname port\n");
@@ -74,15 +74,16 @@ int main(int argc, char *argv[])
 
     while(berst == 0)
     {
-          n = read(sockfd,buffer,4);
+          n = read(sockfd,buffer,5);
           if (n < 0)
           {
             error("ERROR reading from socket");
           }
-          printf("%s\n",buffer);
-          if (strcmp(buffer, "stop") == 0) { berst = 2002; }
-          bzero(buffer,256);
-          sleep(2);
+
+          if (buffer[0] != 1) { printf("ERROR> Expected STATUS_OK + DATA_FLAG\n"); }
+          printf("My ID: %d\n", buffer[1]);
+          if (buffer[4] != (unsigned char)0xEE) { printf("ERROR> Expected MSG_END\n");}
+          berst = 2002;
     }
 
     printf("> Recieved signal to close\n\n");

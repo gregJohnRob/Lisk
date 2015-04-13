@@ -50,6 +50,6 @@
 
 
 //Special Message End Constant
-#define MSG_END           0xFF  //Plonk at end of each message
+#define MSG_END           0xEE  //Plonk at end of each message
 
 #endif

@@ -1,6 +1,20 @@
 Current Version: 0.1
 
+Version 0.1: (C)
+----------------
+SERVER:
+* - Fixed server only accepting half the number of accepted clients
+
++ Supports Protocol message encoding
++ When client connects they receive a welcome packet
+
+- Modified some text output from server
+
+TEST-CLIENT:
++ Checking for welcome packet then shutdown
+
 Version 0.1: (B)
+----------------
 SERVER:
 - When server accepts new client uses client_t struct to store info
 - Added Protocol.h outlining message constants from client and to send
@@ -8,7 +22,7 @@ TEST-CLIENT:
 
 
 Version 0.1:
-
+------------
 SERVER:
 - Server Runs
 - Server Accepts upto MAX_CLIENTS

@@ -43,8 +43,6 @@ int main(int argc, char *argv[])
 
      //Once we're done, tell user we're exiting, cause this is only debug!
      printf("NOTICE> Shutting down...\n");
-
-     BroadcastMsg("stop");
      CloseAllClients();
 
      close(Serverfd);
