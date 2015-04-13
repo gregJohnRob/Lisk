@@ -25,9 +25,7 @@ int main(int argc, char *argv[])
 {
     //File Descriptors for the server socket and client socket, allowing use of read() and write()
      int newsockfd;
-     socklen_t clilen;                         //Stores the size of client's address
      char buffer[256];                        //Buffer for storing output messages
-     struct sockaddr_in cli_addr;  //Structures for holding IP addresses (serv for the server, cli for client)
      int n;                                   //Return codes for socket functions
 
      printf("> Starting up...\nMSG> Version: %s\n", VERSION);
@@ -54,13 +52,6 @@ int main(int argc, char *argv[])
 
      //UNREACHABLE CURRENTLY
 
-     //Accept gets a connection from the client, saving a new file descriptor, checking for errors once more.
-     clilen = sizeof(cli_addr);
-     newsockfd = accept(Serverfd, (struct sockaddr *) &cli_addr, &clilen);
-     if (newsockfd < 0)
-     {
-       error("ERROR on accept");
-     }
 
      //Reads in data from the client that's connected
      bzero(buffer,256);

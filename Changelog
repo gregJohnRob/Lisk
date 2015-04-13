@@ -1,0 +1,21 @@
+Current Version: 0.1
+
+Version 0.1: (B)
+SERVER:
+- When server accepts new client uses client_t struct to store info
+- Added Protocol.h outlining message constants from client and to send
+TEST-CLIENT:
+
+
+Version 0.1:
+
+SERVER:
+- Server Runs
+- Server Accepts upto MAX_CLIENTS
+- Server closes after MAX_CLIENTS reached
+- Send single message or broadcast to all clients
+
+TEST-CLIENT:
+- Connects to Client
+- Reads in message of 4 bytes long
+- If recieves "stop" closes after a delay

@@ -15,7 +15,7 @@
 #include "Utils/Utils.h"
 
 /* Defines */
-#define VERSION "0.1 (Pre Alpha)"
+#define VERSION "0.1"
 
 /* Prototypes */
 int Serv_Setup(void);      //Server setup function

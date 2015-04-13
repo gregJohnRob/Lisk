@@ -2,6 +2,8 @@
 /server/server #Server exe
 /client/test-client/client #CLient exe
 
+ToDo
+
 *.o
 *.so
 *.exe

@@ -2,7 +2,7 @@
 
 
 int NumClients = 0;       //Current Number of clients connected
-int Clients[MAX_CLIENTS]; //File Descriptor list for clients
+Client_t Clients[MAX_CLIENTS]; //File Descriptor list for clients
 
 
 /* Getter for NumClients */
@@ -15,7 +15,8 @@ int GetNumClients() { return NumClients; }
 void AcceptClients(int Serverfd)
 {
   struct sockaddr_in Cli_addr;
-  int NewClient = 0;
+  int NewClientfd = 0;
+  Client_t NewClient;
   socklen_t Clilen;
 
   while(NumClients < MAX_CLIENTS)
@@ -24,21 +25,22 @@ void AcceptClients(int Serverfd)
 
     //Accept gets a connection from the client, saving a new file descriptor, checking for errors once more.
     Clilen = sizeof(Cli_addr);
-    NewClient = accept(Serverfd, (struct sockaddr *) &Cli_addr, &Clilen);
-    if (NewClient < 0) { printf("ERROR> Unable to accept client\n"); }
+    NewClientfd = accept(Serverfd, (struct sockaddr *) &Cli_addr, &Clilen);
+    if (NewClientfd < 0) { printf("ERROR> Unable to accept client\n"); }
     else
     {
+      //Fills out new Client_t struct with the data we require
+      struct sockaddr_in addr_in = (struct sockaddr_in)Cli_addr;
+      char *IP = inet_ntoa(addr_in.sin_addr);
+      NewClient.id = NumClients++;
+      NewClient.fd = NewClientfd;
+      NewClient.IP = IP;
+
       Clients[NumClients] = NewClient;
       NumClients++;
 
-      //Getting IP address to display to user
-      struct sockaddr_in addr_in = (struct sockaddr_in)Cli_addr;
-      char *IP = inet_ntoa(addr_in.sin_addr);
       printf("> New Client (%d): %s\n", NumClients, IP);
-
-      //TODO Send Welcoming message, or some form of ID
-      BroadcastMsg("stop");
-      SendMsg(NewClient, "Welcome to Risk");
+      SendMsg(NewClient.fd, "Welcome to Risk");
     }
   }
 }
@@ -51,7 +53,7 @@ void CloseAllClients()
   int i = 0;
   for(i = 0; i <= MAX_CLIENTS; i++)
   {
-    close(Clients[i]);
+    close(Clients[i].fd);
   }
 }
 
@@ -64,7 +66,7 @@ void BroadcastMsg(char* Msg)
   int i = 0;
   for(i = 0; i <= MAX_CLIENTS; i++)
   {
-    SendMsg(Clients[i], Msg);
+    SendMsg(Clients[i].fd, Msg);
   }
 }
 

@@ -15,6 +15,13 @@
 
 /* Declarations */
 
+//Defines a client in terms of Coms
+typedef struct Client
+{
+  char id;    //ID number of Client
+  char* IP;   //IP address
+  int fd;     //Socket FD of Client
+}Client_t;
 
 /* Prototypes */
 int GetNumClients(void);      //Returns the number of connected clients
