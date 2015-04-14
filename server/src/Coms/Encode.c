@@ -1,6 +1,13 @@
 #include "Protocol.h"
 #include "Encode.h"
 
+/* Encode.c
+ *
+ * Some encoding utilites for communication functions
+ * Author: Ewan McCartney
+ */
+
+
 /* EncodeMessage
  *    Encodes a message into the provided buffer
  *    NOTE: Any further data must be added before sending

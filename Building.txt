@@ -1,0 +1,29 @@
+How to Build Lisk
+-----------------
+
+First Steps:
+  You may not have the permissions to run the make bash file when downloaded over the internet.
+  You can either preceed all calls to make.sh with sudo or use:
+  chmod +x ./make.sh
+  from the root directory of LISK
+
+
+* You will find the executable project in <project>/bin *
+
+
+Usage: ./make.sh <PROJECT> <OPTION>
+
+<PROJECT> specifies the project to build. Either:
+          server - build server
+          client - builds client
+
+          PLEASE NOTE: these need to be lower case
+
+<OPTION> specifies what to do with the given project
+
+Server options:
+        -n : Build normally without debug or optimizations
+        -d : Build with debug switch
+        -r : Build without debug and optimizations
+        -c : Removes .o files from obj/
+        -f : Removes .o files from obj/ and the compiled program

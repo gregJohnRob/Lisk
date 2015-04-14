@@ -1,6 +1,12 @@
 #include "Coms.h"
 #include "Protocol.h"
 
+/* Coms.c
+ *
+ * Communication for LISK Server
+ *
+ * Author: Ewan McCartney
+ */
 
 int NumClients = 0;       //Current Number of clients connected
 Client_t Clients[MAX_CLIENTS]; //File Descriptor list for clients

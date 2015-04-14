@@ -13,16 +13,16 @@ Building
 --------
 *Server*
 
-    gcc -o server Server.c Coms/Coms.c
+    ./make.sh server -n
 
-**TODO** Add proper makefile
+**NOTE** See Building.txt for more info
 
 
 *Client*
 
-    gcc -o client TestClient2.c
+    ./mke.sh client -n
 
-**TODO** Add proper makefile
+**NOTE** See Building.txt for more info
 
 
 Running

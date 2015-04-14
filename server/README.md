@@ -4,9 +4,9 @@ LAN Risk Server
 Building
 ----------
 
-    gcc -o server Server.c Coms/Coms.c
+    make
 
-**TODO** Add proper makefile
+**NOTE** Make options here map directory to make script commands in root
 
 
 Running

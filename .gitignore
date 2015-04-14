@@ -1,6 +1,6 @@
 # Ignored
-/server/server #Server exe
-/client/test-client/client #CLient exe
+/server/obj/
+/server/bin/
 
 ToDo
 

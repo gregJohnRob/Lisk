@@ -4,8 +4,7 @@
  *
  * If no port number given, uses DEFAULT PORT
  *
- * Version: 0.1 (Pre-Alpha)
- * AUthor: BigE
+ * Author: Ewan McCartney
  */
 #include "Server.h"
 
