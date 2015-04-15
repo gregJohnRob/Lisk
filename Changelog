@@ -1,9 +1,25 @@
 Current Version: 0.1
 
+Version 0.1: (E):
+SERVER:
+
+TEST-CLIENT:
+
+
+Version 0.1: (D)
+----------------
+SERVER:
++ Decode function to pass in message(s) from clients to decode into parts
+
+** ADDED MAKEFILE **
+
+TEST-CLIENT:
+
+
 Version 0.1: (C)
 ----------------
 SERVER:
-* - Fixed server only accepting half the number of accepted clients
+* Fixed server only accepting half the number of accepted clients
 
 + Supports Protocol message encoding
 + When client connects they receive a welcome packet

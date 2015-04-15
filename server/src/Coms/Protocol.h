@@ -52,4 +52,17 @@
 //Special Message End Constant
 #define MSG_END           0xEE  //Plonk at end of each message
 
+
+/* Declarations */
+
+//Defines a message from Clients
+typedef struct Msg
+{
+  unsigned char WasValid;        //Flag if message was a message
+  unsigned char Id;              //ID of Client
+  unsigned char Code;            //Protocol code
+  unsigned char Op;              //Operation code
+  unsigned char Data[3];         //Data from message
+} Msg_t;
+
 #endif
