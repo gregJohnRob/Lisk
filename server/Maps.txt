@@ -1,0 +1,67 @@
+Maps
+-----
+
+Maps in LISK are essentially a Graph.
+
+They will be rendered in a Client size grid of X x Y pixels with the Map image behind it.
+Nodes will have an <X,Y> Co-ord which'll place it on this grid
+Edges will define what Nodes connect to what Nodes, which defines what area can attack other areas.
+
+Maps In Action
+--------------
+Client Grid:
+
+0 1 2 3 4 5 6 7 8 9 (X)
+1
+2 x     x     x
+3     x     x     x
+4
+5 x       x     x x
+6
+7   x   x   x     x
+8   x       x     x
+9       x
+(Y)
+Nodes=
+<X,Y> = ID
+<1,2> = 0
+<1,5> = 1
+<2,7> = 2
+<2,8> = 3
+<3,3> = 4
+<4,2> = 5
+...
+..
+<9,7> = 16
+<9,8> = 17
+
+We define edges as<ID,ID> where these are the IDs of the Nodes connected
+<0,2> = Node <1,2> is connected to <2,7>
+
+NOTE: Nodes can't connect themselves
+
+
+Map Files
+---------
+A Map file should look like:
+
+
+NAME                   (MAX 24 characters)
+MAP IMAGE ID
+Num Nodes
+Num Edges
+
+!#Nodes
+..
+..
+..
+..
+..
+
+!# Edges
+..
+..
+..
+..
+..
+..

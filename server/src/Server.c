@@ -15,10 +15,10 @@ void error(const char *msg)
     perror(msg);
     exit(1);
 }
+
 /* Globals */
 int Serverfd = 0;                           //Server File Descriptor
 int PortNo = DEFAULT_PORT;                  //Port Number of Server
-
 
 int main(int argc, char *argv[])
 {
