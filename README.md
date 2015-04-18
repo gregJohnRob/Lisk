@@ -40,8 +40,12 @@ Server broadcasts on 127.0.0.1 AND your computer's network IP (usually 192.168.X
 
 *Client*
 
-    ./client localhost|Network IP port
+    ./client localhost|Network IP:port
 
 localhost if connecting via 127.0.0.1 or the IP address of the computer running the server
 
 port = Port number of the server. *You must give this even if using DEFAULT_PORT*
+
+*Example*
+
+    ./client 192.168.0.2:12345
