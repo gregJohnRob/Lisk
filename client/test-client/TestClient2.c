@@ -22,11 +22,18 @@ int main(int argc, char *argv[])
 
     //Checking CLI args for host and port
     unsigned char buffer[256];
-    if (argc < 3)
+    if (argc != 2)
     {
-       error("usage: client hostname port\n");
+       error("Usage: ./client HostName:Port\n");
     }
-    portno = atoi(argv[2]);
+    char *hostname;
+    char *delim = ":";
+
+    // Token will point to hostname.
+    hostname = strtok(argv[1], delim);
+
+    portno = atoi(strtok(NULL, delim));
+
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0)
     {
@@ -34,7 +41,7 @@ int main(int argc, char *argv[])
     }
 
     //Get ther server name
-    server = gethostbyname(argv[1]);
+    server = gethostbyname(hostname);
     if (server == NULL)
     {
         error("ERROR, no such host\n");
