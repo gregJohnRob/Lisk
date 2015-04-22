@@ -36,6 +36,19 @@ int main(int argc, char *argv[])
      //Run Setup of server. Incase of error, we exit
      if (Serv_Setup() <0) { printf("NOTICE> Exiting...\n"); exit(1); }
 
+
+    //Short Map testing section to support the loading of a Map to test
+     #if MAP_DEBUG
+        Map_t *Map = mCreate("TestMap.txt");
+
+        if (Map == NULL) { printf("ERROR> %s", "Failed to load TestMap.txt"); exit(1); }
+
+        printMap(Map);
+        exit(0);
+     #endif
+
+
+
      //Once setup has been run, enter client connection stage.
      //EDIT: Perhaps put this in a loop?
      AcceptClients(Serverfd);

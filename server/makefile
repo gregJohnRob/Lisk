@@ -5,7 +5,7 @@ CFLAGS=-Wall
 
 EXE=bin/LiskServer
 
-OBJECTS = obj/Server.o obj/Coms.o obj/Encode.o
+OBJECTS = obj/Server.o obj/Coms.o obj/Encode.o obj/Utils.o obj/Map.o
 
 all: dirs $(EXE)
 
@@ -27,6 +27,12 @@ obj/Coms.o : src/Coms/Coms.c
 		$(CC) $(CFLAGS) -c $^ -o $@
 
 obj/Encode.o : src/Coms/Encode.c
+		$(CC) $(CLFAGS) -c $^ -o $@
+
+obj/Utils.o : src/Utils/Utils.c
+		$(CC) $(CLFAGS) -c $^ -o $@
+
+obj/Map.o : src/Game/Map.c
 		$(CC) $(CLFAGS) -c $^ -o $@
 
 #Make directories we require

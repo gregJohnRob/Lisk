@@ -49,8 +49,6 @@ A Map file should look like:
 NAME                   (MAX 24 characters)
 MAP IMAGE ID
 Num Nodes
-Num Edges
-
 !#Nodes
 ..
 ..
