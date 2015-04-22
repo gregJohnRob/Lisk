@@ -66,14 +66,29 @@ Map_t *mCreate(char* Filename)
   for(Count = 0; Count < Map->NodeCount && fgets(Line, LINE_MAX, mFile) != NULL; Count++)
   {
     Node_t Node = Map->Nodes[Count];
-
+    short NodeEdges = 0;
     sscanf(Line, "%c %hd %hd %hd", &Node.Id,
                                    &Node.X,
                                    &Node.Y,
-                                   &Node.EdgeCount);
+                                   &NodeEdges);
 
-    char Edges[Node.EdgeCount];
+    char Edges[NodeEdges];
     Node.Edges = (char *) calloc(1, sizeof(Edges));
+
+    Map->Nodes[Count] = Node;
+  }
+
+  fgets(Line, LINE_MAX, mFile);   //Read over NULL #!Edges Line
+
+  //Load in the Edges within the Map and stores them in the correct Nodes
+  while(fgets(Line, LINE_MAX, mFile) != NULL)
+  {
+      short nId = 0;
+      short nCon = 0;
+      sscanf(Line, "%hd %hd",&nId, &nCon);
+
+      Map->Nodes[nId].Edges[Map->Nodes[nId].EdgeCount] = nCon;
+      Map->Nodes[nId].EdgeCount++;
   }
 
   fclose(mFile);

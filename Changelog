@@ -2,7 +2,10 @@ Current Version: 0.1
 
 Version 0.1: (E):
 SERVER:
-
++ Added Flag MAP_DEBUG to printout the Map the Server has decided to pick when starting up
++ Added Map backend code for loading and freeing
++ Added Test_Map for debug operations
++ Added Utility function to print out any given Map pointer
 TEST-CLIENT:
 
 
