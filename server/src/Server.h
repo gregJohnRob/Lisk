@@ -21,7 +21,7 @@
 
 //Uncomment this line to allow Map Debugging info
 //TODO Remove in later builds
-#define MAP_DEBUG 12
+//#define MAP_DEBUG 12
 
 /* Prototypes */
 int Serv_Setup(void);      //Server setup function

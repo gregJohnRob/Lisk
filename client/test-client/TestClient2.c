@@ -24,7 +24,8 @@ int main(int argc, char *argv[])
     unsigned char buffer[256];
     if (argc != 2)
     {
-       error("Usage: ./client HostName:Port\n");
+       printf("%s", "Usage: ./client HostName:Port\n");
+       exit(1);
     }
     char *hostname;
     char *delim = ":";
