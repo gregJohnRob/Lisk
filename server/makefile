@@ -39,6 +39,7 @@ obj/Map.o : src/Game/Map.c
 dirs:
 		@mkdir -p obj
 		@mkdir -p bin
+		@cp TestMap.txt bin/TestMap.txt
 
 
 #Extra
