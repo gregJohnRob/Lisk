@@ -44,7 +44,13 @@ int main(int argc, char *argv[])
 
     //Short Map testing section to support the loading of a Map to test
     #if MAP_DEBUG
-        printMap(Map);
+        //printMap(Map);
+        short V = mIsConnected(Map, 0,3);
+        short VV = mIsConnected(Map, 1, 2);
+        short VVV = mIsConnected(Map, 1, 6);
+        printf("> Is 0 -> 3? %d\n", V);
+        printf("> Is 1 -> 2? %d\n", VV);
+        printf("> Is 1 -> 6? %d\n", VVV);
         exit(0);
     #endif
 
