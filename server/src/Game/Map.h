@@ -58,12 +58,16 @@ typedef struct LList
 
 
 /* Prototypes */
-Map_t *mCreate(char *);               //Creates a lovely new map from file
-void mDestory(Map_t *);               //Free memory from Map
+Map_t *mCreate(char *);                   //Creates a lovely new map from file
+void mDestory(Map_t *);                   //Free memory from Map
 
-short mIsConnected(Map_t*, short, short);  //Are the two given nodes connected?
-short mGetNode(Map_t*, short);          //Fetches a node by it's ID.
-short IsInSet(LList_t *, short);      //Is the value in a set
+short mIsConnected(Map_t*, short, short); //Are the two given nodes connected?
+short mGetNode(Map_t*, short);            //Fetches a node by it's ID.
+short IsInSet(LList_t *, short);          //Is the value in a set
+
+short mCanAttack(Map_t* short, short);    //Checks if 2 nodes can attack each other
+short mCanMoveUnits(Map_t* short, short); //Checks if one can move units between 2 nodes
+
 
 //Linked List Functions
 void lAdd(LList_t *, short);              //Add item to Linked List

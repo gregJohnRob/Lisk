@@ -142,6 +142,74 @@ short mIsConnected(Map_t *Map, short A, short B)
   return NOT_CONNECTED;
 }
 
+/* CanAttack
+ *  Checks if 2 adjacent nodes can attack each other
+ *  Checks ID and also the Owner of the Node(s)
+ *    Returns CONNECTED if they can attack or NOT_CONNECTED otherwise
+ */
+short mCanAttack(Map_t *Map, short A, short B)
+{
+    Node_t Node = Map->Nodes[mGetNode(Map, A)];
+    Node_t NodeB = Map->Nodes[mGetNode(Map,B)];
+    int i = 0;
+    for(i = 0; i < Node->EdgeCount; i++)
+    {
+      if (Node.Edges[i].Id == A)
+      {
+         if (Node.Owner != NodeB.Owner) { return CONNECTED; }
+      }
+    }
+    return NOT_CONNECTED;
+}
+
+
+/* CanMoveUnits
+ *  Checks if you can move Units between the 2 given nodes
+ *  Similar to mIsConnected but checks ownership of the Node as well
+ *  Returns CONNECTED if they are linked, or NOT_CONNECTED if not
+ */
+short mCanMoveUnits(Map_t* Map, short A, short B)
+{
+  //First get Start Node
+  Node_t Start = Map->Nodes[mGetNode(Map, A)];
+
+  //Setup the 2 linked lists we need.
+  LList_t ToDoSet; LList_t *pToDoSet = &ToDoSet;
+  LList_t DoneSet; LList_t *pDoneSet = &DoneSet;
+  ToDoSet.Size = 0; ToDoSet.Start = NULL;
+  DoneSet.Size = 0; DoneSet.Start = NULL;
+
+  //Add starting Node
+  lAdd(pToDoSet, Start.Id);
+
+  //Keep looping while we have nodes to check.
+  while(ToDoSet.Size > 0)
+  {
+	   short Value = lRemove(pToDoSet);
+     Node_t Node = Map->Nodes[mGetNode(Map, Value)];
+     int i = 0;
+	   lAdd(&DoneSet, Node.Id);
+
+     //CHecking each other the Edges on this node
+     for(i = 0; i < Node.EdgeCount; i++)
+     {
+       short Location = mGetNode(Map, Node.Edges[i]);
+
+       if(Map->Nodes[Location].Id == B) { return CONNECTED; }
+
+       //Added extra check for if the nodes are owned by the player
+       if((IsInSet(pDoneSet, Map->Nodes[Location].Id) == 0) && ( Map->Nodes[Location].Owner == Start.Owner))
+       {
+         lAdd(pToDoSet, Map->Nodes[Location].Id);
+       }
+     }
+  }
+  return NOT_CONNECTED;
+}
+
+
+
+
 /* GetNode
  *  Finds a node in a Map by it's Id
  * Returns position if found, else -1
