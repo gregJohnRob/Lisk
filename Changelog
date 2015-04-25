@@ -1,5 +1,12 @@
 Current Version: 0.1
 
+Version 0.1 (F):
+SERVER:
++ Added Pathfinding for Nodes in Map (Doesn't take into consideration owner yet)
++ Added Linked List for the above ^
++ Added simple Map test on startup to check the connection code is working
+
+
 Version 0.1: (E):
 SERVER:
 + Added Flag MAP_DEBUG to printout the Map the Server has decided to pick when starting up

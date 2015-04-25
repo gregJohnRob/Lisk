@@ -17,7 +17,7 @@
 #include "Utils/Utils.h"
 
 /* Defines */
-#define VERSION "0.1(E)"
+#define VERSION "0.1(F)"
 
 //Uncomment this line to allow Map Debugging info
 //TODO Remove in later builds

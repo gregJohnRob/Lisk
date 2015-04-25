@@ -88,31 +88,47 @@ Map_t *mCreate(char* Filename)
 //Frees all memory associated with the Map!
 void mDestory(Map_t *Map) { free(Map); }
 
+
+
+
 /* mIsConnected
  * Check if two given nodes in a Map are connected or not.
+ *
+ * Based on Simple pathfinding:
+ *
+ *  We start at the beginning (A)
+ *      Add it to the DoneSet
+ *      Check all it's connections to see if they are equal to (B)
+ *        If so - return
+ *        Else - Add those connections to ToDoSet
+ *      Loop back until ToDoSet is empty
+ *
  */
 short mIsConnected(Map_t *Map, short A, short B)
 {
   //First get Start Node
   Node_t Start = Map->Nodes[mGetNode(Map, A)];
+
+  //Setup the 2 linked lists we need.
   LList_t ToDoSet; LList_t *pToDoSet = &ToDoSet;
   LList_t DoneSet; LList_t *pDoneSet = &DoneSet;
-
   ToDoSet.Size = 0; ToDoSet.Start = NULL;
   DoneSet.Size = 0; DoneSet.Start = NULL;
 
+  //Add starting Node
   lAdd(pToDoSet, Start.Id);
 
+  //Keep looping while we have nodes to check.
   while(ToDoSet.Size > 0)
   {
-	short Value = lRemove(pToDoSet);
-    Node_t Node = Map->Nodes[mGetNode(Map, Value)];
-    int i = 0;
-	lAdd(&DoneSet, Node.Id);
+	   short Value = lRemove(pToDoSet);
+     Node_t Node = Map->Nodes[mGetNode(Map, Value)];
+     int i = 0;
+	   lAdd(&DoneSet, Node.Id);
 
-
-    for(i = 0; i < Node.EdgeCount; i++)
-    {
+     //CHecking each other the Edges on this node
+     for(i = 0; i < Node.EdgeCount; i++)
+     {
        short Location = mGetNode(Map, Node.Edges[i]);
 
        if(Map->Nodes[Location].Id == B) { return CONNECTED; }
@@ -121,15 +137,14 @@ short mIsConnected(Map_t *Map, short A, short B)
        {
          lAdd(pToDoSet, Map->Nodes[Location].Id);
        }
-    }
-
+     }
   }
-
   return NOT_CONNECTED;
 }
 
 /* GetNode
  *  Finds a node in a Map by it's Id
+ * Returns position if found, else -1
  */
 short mGetNode(Map_t *Map, short N)
 {
@@ -142,10 +157,12 @@ short mGetNode(Map_t *Map, short N)
 }
 
 
-//Returns 1 if the value is already in the set
+/* IsInSet
+ * Performs a Linear search on the given Linked List to find the given node
+ * Returns 1 if found or 0 otherwise
+ */
 short IsInSet(LList_t *Set, short V)
 {
-  int i = 0;
   LLNode_t *Node = Set->Start;
   while(Node != NULL)
   {
@@ -174,6 +191,7 @@ void lAdd(LList_t *List, short Element)
 
 /* LRemove
  * Removes item from Linked list, remembering to free memory and update pointers
+ * Returns element at the head of the list
  */
 short lRemove(LList_t *List)
 {
