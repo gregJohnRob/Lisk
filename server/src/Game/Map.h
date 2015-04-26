@@ -7,10 +7,7 @@
 #include <string.h>
 
 #include "../Server.h"
-
-#if MAP_DEBUG
-  #include "../Utils/Utils.h"
-#endif
+#include "../Utils/Utils.h"
 
 /* Declarations */
 #define NPC_ID 0xEE   //ID used if there is an NPC controlled Node on Map
@@ -56,6 +53,8 @@ typedef struct LList
 #define CONNECTED     99  //Node Connected value
 #define NOT_CONNECTED -1  //Node not connected value
 
+#define STARTING_TROOPS 3 //Number of starting troops
+
 
 /* Prototypes */
 Map_t *mCreate(char *);                   //Creates a lovely new map from file
@@ -65,8 +64,10 @@ short mIsConnected(Map_t*, short, short); //Are the two given nodes connected?
 short mGetNode(Map_t*, short);            //Fetches a node by it's ID.
 short IsInSet(LList_t *, short);          //Is the value in a set
 
-short mCanAttack(Map_t* short, short);    //Checks if 2 nodes can attack each other
-short mCanMoveUnits(Map_t* short, short); //Checks if one can move units between 2 nodes
+short mCanAttack(Map_t*, short, short);    //Checks if 2 nodes can attack each other
+short mCanMoveUnits(Map_t*, short, short); //Checks if one can move units between 2 nodes
+
+void mPopulate(Map_t *, short, short);     //Populates the given Map at the start of a game
 
 
 //Linked List Functions

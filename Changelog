@@ -1,4 +1,14 @@
-Current Version: 0.1
+Current Version: 0.2
+
+Version 0.2 (B):
+SERVER:
++ Added a populate function to fill map with players
++ Added some random number utilities, with ability to seed and a dice rollers
+
+Version 0.2:
+SERVER:
++ Added more backend Map functions
+
 
 Version 0.1 (F):
 SERVER:

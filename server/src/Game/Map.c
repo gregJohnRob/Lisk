@@ -2,6 +2,7 @@
 /* LISK MAP.C
  *
  * Provides some backend work to do with Lisk Maps
+ *
  * Author: Ewan McCartney
  */
 
@@ -152,9 +153,9 @@ short mCanAttack(Map_t *Map, short A, short B)
     Node_t Node = Map->Nodes[mGetNode(Map, A)];
     Node_t NodeB = Map->Nodes[mGetNode(Map,B)];
     int i = 0;
-    for(i = 0; i < Node->EdgeCount; i++)
+    for(i = 0; i < Node.EdgeCount; i++)
     {
-      if (Node.Edges[i].Id == A)
+      if (Node.Edges[i] == A)
       {
          if (Node.Owner != NodeB.Owner) { return CONNECTED; }
       }
@@ -206,6 +207,48 @@ short mCanMoveUnits(Map_t* Map, short A, short B)
   }
   return NOT_CONNECTED;
 }
+
+
+/* mPopulate
+ *    Populates the given Map at the start of a game.
+ *    Specify the number of players and the number of nodes/player
+ *
+ */
+void mPopulate(Map_t *Map, short Players, short Nodes)
+{
+    short NodesPerPlayer = Nodes/Players;
+    short GivenNodes = 0;
+    int NodeIds[128];
+    int i = 0;
+    int j = 0;
+
+    //Fill up Ids into buffer then shuffle it for population
+    for(i = 0; i < Map->NodeCount; i++) { NodeIds[i] = i; }
+    Shuffle(&NodeIds[0], Map->NodeCount);
+
+    //Setting up all player locations
+    while( GivenNodes < NodesPerPlayer)
+    {
+      for(i = 0; i < Players; i++)
+      {
+        short Location = mGetNode(Map, NodeIds[j]);
+        Map->Nodes[Location].Owner = i;
+        Map->Nodes[Location].Troops = STARTING_TROOPS;
+        j++;
+      }
+      GivenNodes++;
+    }
+
+    //Filling out any of the rest as NPCs
+    while ( j <= Map->NodeCount)
+    {
+      short Location = mGetNode(Map, NodeIds[j]);
+      Map->Nodes[Location].Owner = NPC_ID;
+      Map->Nodes[Location].Troops = STARTING_TROOPS;
+    }
+}
+
+
 
 
 

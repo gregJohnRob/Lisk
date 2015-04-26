@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
      else { printf("> No port given. Using default: %d\n",DEFAULT_PORT); }
 
      Map_t *Map = mCreate("TestMap.txt");
+     rSeed();
 
      if (Map == NULL) { printf("ERROR> %s\n", "Failed to load TestMap.txt"); exit(1); }
      else { printf("MSG> %s -> %s\n", "Loaded Map", Map->Name); }
@@ -42,23 +43,13 @@ int main(int argc, char *argv[])
      //Run Setup of server. Incase of error, we exit
      if (Serv_Setup() <0) { printf("NOTICE> Exiting...\n"); exit(1); }
 
-    //Short Map testing section to support the loading of a Map to test
-    #if MAP_DEBUG
-        //printMap(Map);
-        short V = mIsConnected(Map, 0,3);
-        short VV = mIsConnected(Map, 1, 2);
-        short VVV = mIsConnected(Map, 1, 6);
-        printf("> Is 0 -> 3? %d\n", V);
-        printf("> Is 1 -> 2? %d\n", VV);
-        printf("> Is 1 -> 6? %d\n", VVV);
-        exit(0);
-    #endif
-
-
 
      //Once setup has been run, enter client connection stage.
      //EDIT: Perhaps put this in a loop?
      AcceptClients(Serverfd);
+
+     //Once we've got enough players, we fill the map
+     mPopulate(Map, GetNumClients(), Map->NodeCount);
 
      //Once we're done, tell user we're exiting, cause this is only debug!
      printf("NOTICE> Shutting down...\n");
