@@ -30,8 +30,7 @@ int main(int argc , char *argv[])
     struct sockaddr_in address;                 //Server address
     char buffer[1025];                          //Data buffer of 1K
     fd_set readfds;                             //Set of socket descriptors
-    char *message = "ECHO Daemon v1.0 \r\n";    //Welcome message                               
-
+    char *message = "ECHO Daemon v1.0 \r\n";    //Welcome message
 
     char *Fmessage = "ECHO Daemon v1.0\n> Client capacity full.";
 
@@ -39,6 +38,11 @@ int main(int argc , char *argv[])
     if (argc == 2) {  PortNo = atoi(argv[1]);  printf("> Port given. Using port: %d\n", PortNo); }
     else { printf("> No port given. Using default: %d\n",DEFAULT_PORT); }
 
+    /* Setup Game Here */
+    // TODO Pick a Map
+    // TODO Load Map from File
+    // TODO Seed Random Number Generator
+    // TODO Any other Setup?
 
     //Clear out the array of client Fds
     for (i = 0; i < MAX_CLIENTS; i++) { client_socket[i] = 0; }
@@ -82,8 +86,14 @@ int main(int argc , char *argv[])
     addrlen = sizeof(address);
     puts("Waiting for connections ...");
 
+
     while(1)
     {
+      //TODO Wait for Number of Clients to connect
+      //TODO Once connected populate the Map and start the Game
+      //TODO Setup Game: Turn(s) etc
+
+
         //Clearing set and adding server socket for reading
         FD_ZERO(&readfds);
         FD_SET(master_socket, &readfds);
@@ -164,6 +174,11 @@ int main(int argc , char *argv[])
                 }
 
                 //Other than that, we can now do some processing on the message!
+
+                //TODO Interpret message from Client
+                //TODO Process responce
+                //TODO Send back reply
+                //TODO Add check at top of Loop if the game state has changed or something?
                 else
                 {
                     //set the string terminating NULL byte on the end of the data read
