@@ -15,12 +15,12 @@
  *    [0] = STATUS | DATA FLAG
  *    [4] = MSG_END
  */
-void EncodeMessage(unsigned char *Buffer, unsigned char Status, unsigned char Data)
+void EncodeMessage(unsigned char *Buffer, Msg_t *Msg)
 {
     unsigned char Head;        //0000 0000
-    Head = Status << 4;        //STATUS 0000
+    Head = Msg->Code << 4;        //STATUS 0000
     Head = Head | 0x0F;        //STATUS 1111
-    *(Buffer) = Head & Data;   //STATUS DATA
+    *(Buffer) = Head & Msg->Op;   //STATUS DATA
     *(Buffer + 4) = MSG_END;
 }
 

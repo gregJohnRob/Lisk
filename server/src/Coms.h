@@ -33,5 +33,6 @@ void CloseAllClients(void);   //CLoses all clients we know of
 /* Message Send Functions */
 void BroadcastMsg(unsigned char[]);
 int SendMsg(Client_t, unsigned char[]);
+void RecieveMsgs(int);
 
 #endif

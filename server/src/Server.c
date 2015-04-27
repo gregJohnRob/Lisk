@@ -1,132 +1,176 @@
-/* A LAN Risk Server
- * -----------------
- * Usage ./server PORT_NUMBER
+/* LISK SERVER
+ *    Mutliple concurrent LAN Risk server. Please see README for
+ *    more details on building.
  *
- * If no port number given, uses DEFAULT PORT
+ *    Based on Silver Moons Linux server with select()
+ *    -> http://www.binarytides.com/multiple-socket-connections-fdset-select-linux/
  *
- * Author: Ewan McCartney
+ *     Usage ./LiskServer PORT_NUMBER
+ *     If no port number given, uses DEFAULT PORT
+ *
+ *     Author: Ewan McCartney
  */
 #include "Server.h"
 
-/* Small function to print out errors over stderr.
- * Program terminates once message printed */
-void error(const char *msg)
+
+int main(int argc , char *argv[])
 {
-    perror(msg);
-    exit(1);
-}
+    int opt = 1;                                //Used for setting up multiple addresses
+    int PortNo = DEFAULT_PORT;                  //Server Port Number
+    int master_socket = 0;                      //Fd of Server socket
+    int addrlen = 0;                            //Length of IP address
+    int new_socket = 0 ;                        //Store of fd when a new client connects
+    int client_socket[MAX_CLIENTS];             //Store of all connected clients
+    int activity = 0;                           //Return val of select()
+    int i = 0;                                  //Counter
+    int valread = 0;                            //Return val of read()
+    int sd = 0;                                 //Used when reading set to listen on
+    int max_sd = 0;                             //Highest fd
+    int NumClients = 0;                         //Number of connected clients
+    struct sockaddr_in address;                 //Server address
+    char buffer[1025];                          //Data buffer of 1K
+    fd_set readfds;                             //Set of socket descriptors
+    char *message = "ECHO Daemon v1.0 \r\n";    //Welcome message
+    char *Fmessage = "ECHO Daemon v1.0\n> Client capacity full.";
 
-/* Globals */
-int Serverfd = 0;                           //Server File Descriptor
-int PortNo = DEFAULT_PORT;                  //Port Number of Server
-Map_t *Map;
-
-int main(int argc, char *argv[])
-{
-    //File Descriptors for the server socket and client socket, allowing use of read() and write()
-     int newsockfd;
-     char buffer[256];                        //Buffer for storing output messages
-     int n;                                   //Return codes for socket functions
-
-     printf("> Starting up...\nMSG> Version: %s\n", VERSION);
-
-     //Checking to see if we have a port number given as CLI args
-     if (argc == 2) {  PortNo = atoi(argv[1]); }
-     else { printf("> No port given. Using default: %d\n",DEFAULT_PORT); }
-
-     Map_t *Map = mCreate("TestMap.txt");
-     rSeed();
-
-     if (Map == NULL) { printf("ERROR> %s\n", "Failed to load TestMap.txt"); exit(1); }
-     else { printf("MSG> %s -> %s\n", "Loaded Map", Map->Name); }
-
-     //Run Setup of server. Incase of error, we exit
-     if (Serv_Setup() <0) { printf("NOTICE> Exiting...\n"); exit(1); }
+    //Checking to see if we have a port number given as CLI args
+    if (argc == 2) {  PortNo = atoi(argv[1]);  printf("> Port given. Using port: %d\n", PortNo); }
+    else { printf("> No port given. Using default: %d\n",DEFAULT_PORT); }
 
 
-     //Once setup has been run, enter client connection stage.
-     //EDIT: Perhaps put this in a loop?
-     AcceptClients(Serverfd);
+    //Clear out the array of client Fds
+    for (i = 0; i < MAX_CLIENTS; i++) { client_socket[i] = 0; }
 
-     //Once we've got enough players, we fill the map
-     mPopulate(Map, GetNumClients(), Map->NodeCount);
-
-     //Once we're done, tell user we're exiting, cause this is only debug!
-     printf("NOTICE> Shutting down...\n");
-     CloseAllClients();
-
-     //Free up the memory used by the Map to save memory leaks!
-     mDestory(Map);
-
-     close(Serverfd);
-     exit(0);
-
-     //UNREACHABLE CURRENTLY
-
-
-     //Reads in data from the client that's connected
-     bzero(buffer,256);
-     n = read(newsockfd,buffer,255);
-     if (n < 0)
-     {
-        error("ERROR reading from socket");
-     }
-
-     //Prints out what it got, and sends a confirmation to the client.
-     printf("Here is the message: %s\n",buffer);
-     n = write(newsockfd,"I got your message",18);
-     if (n < 0)
-     {
-       error("ERROR writing to socket");
-     }
-
-     //Closes both server and client sockets, IN CORRECT ORDER
-     close(newsockfd);
-     close(Serverfd);
-     return 0;
-}
-
-/* Setup
- *   Creates Server socket and performs bind() and listen()
- *   Allows server to startup
- *
- * Returns -1 if fails
- */
-int Serv_Setup()
-{
-    struct sockaddr_in serv_addr;
-
-    Serverfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (Serverfd < 0)
+    //create a master socket
+    if( (master_socket = socket(AF_INET , SOCK_STREAM , 0)) == 0)
     {
-        printf("ERROR> Couldn't start network coms.\n");
-        return -1;
+        perror("socket failed");
+        exit(EXIT_FAILURE);
     }
 
-    //Sets everything in the serv_addrs to 0
-    bzero((char *) &serv_addr, sizeof(serv_addr));
+    //Setting master socket to allow multiple connections.
+    //NOTE Will work without this but is apparently goo dhabit.
+    if( setsockopt(master_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0 )
+    {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
 
     //Setup serv_addr struct with right values
-    serv_addr.sin_family = AF_INET;          //Should always be AF_INET (I assume AF_UNIX for pipe)
-    serv_addr.sin_addr.s_addr = INADDR_ANY;  //Sets the address of the Server. Should always be the IP of machine INADDR_ANY = IP of machine
-    serv_addr.sin_port = htons(PortNo);      //Sets port of server. Requires to ne in Network byte order, so use Htons
+    address.sin_family = AF_INET;          //Should always be AF_INET (I assume AF_UNIX for pipe)
+    address.sin_addr.s_addr = INADDR_ANY;  //Sets the address of the Server. Should always be the IP of machine INADDR_ANY = IP of machine
+    address.sin_port = htons(PortNo);      //Sets port of server. Requires to ne in Network byte order, so use Htons
 
-    /* Binds the Socket to the address.
-     * Bind(FILE DES, ADDRESS, SIZE)
-     * FILE DES is the value returned from socket()
-     * ADDRESS is our addr struct, but requires to be cast to sockaddr for function
-     * SIZE of the address of socket
-     *
-     * Returns -1 if failed. Perhaps the socket is already in use.
-     */
-    if (bind(Serverfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
+    //bind the socket to localhost port : DEFAULT or given CLI arg
+    if (bind(master_socket, (struct sockaddr *)&address, sizeof(address))<0)
     {
-       printf("ERROR> Unable to associate server with network socket.\n");
-       return -1;
+        perror("bind failed");
+        exit(EXIT_FAILURE);
+    }
+    printf("Listener on port %d \n", PortNo);
+
+    //Specify maximum of 5 pending connections for the master socket
+    if (listen(master_socket, 5) < 0)
+    {
+        perror("listen");
+        exit(EXIT_FAILURE);
     }
 
-    //Listens for connections. accept maximum of 5 connections in queue while processing responce. Standard size for systems
-    listen(Serverfd,5);
-    printf("MSG> I'm broadcasting on: 127.0.0.1 and your computer's IP address.\n");
+    //Accept the incoming connection
+    addrlen = sizeof(address);
+    puts("Waiting for connections ...");
+
+    while(1)
+    {
+        //Clearing set and adding server socket for reading
+        FD_ZERO(&readfds);
+        FD_SET(master_socket, &readfds);
+        max_sd = master_socket;
+
+        //Adding all the child sockets to the set, making sure they are valid
+        //And updating the highest for select()
+        for ( i = 0 ; i < MAX_CLIENTS ; i++)
+        {
+            sd = client_socket[i];
+            if(sd > 0) { FD_SET( sd , &readfds);}
+            if(sd > max_sd) { max_sd = sd; }
+        }
+
+        //Waiting for activity. SInce no timeout we do this indefinately
+        activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL);
+
+        if ((activity < 0) && (errno!=EINTR))  { printf("select error"); }
+
+        //First - CHeck master socket. If something here we have a new connection
+        if (FD_ISSET(master_socket, &readfds))
+        {
+            if ((new_socket = accept(master_socket, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
+            {
+                perror("accept");
+                exit(EXIT_FAILURE);
+            }
+
+            //Helpful print message
+            printf("New connection , socket fd is %d , ip is : %s , port : %d \n" , new_socket , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
+
+            NumClients++;
+            if( NumClients > MAX_CLIENTS)
+            {
+              NumClients--;
+              puts("> Client capcity full. CLosing new connection");
+              if( send(new_socket, Fmessage, strlen(Fmessage), 0) != strlen(Fmessage) ) { perror("Failed to send FULL message"); }
+              close (new_socket);
+            }
+            else
+            {
+              //send new connection greeting message
+              //TODO Add ID given
+              if( send(new_socket, message, strlen(message), 0) != strlen(message) ) { perror("send"); }
+
+              puts("Welcome message sent successfully");
+
+              //Adding the new socket to the list of clients
+              for (i = 0; i < MAX_CLIENTS; i++)
+              {
+                if( client_socket[i] == 0 )
+                {
+                  client_socket[i] = new_socket;
+                  printf("Adding to list of sockets as %d\n" , i);
+                  break;
+                }
+              }
+            }
+          }
+
+        //If not on master, we have something from the clients!
+        for (i = 0; i < MAX_CLIENTS; i++)
+        {
+            sd = client_socket[i];
+
+            if (FD_ISSET( sd , &readfds))
+            {
+                //Checking for closing making sure to read message
+                if ((valread = read( sd , buffer, 1024)) == 0)
+                {
+                    //Somebody disconnected , get his details and print
+                    getpeername(sd , (struct sockaddr*)&address , (socklen_t*)&addrlen);
+                    printf("Host disconnected , ip %s , port %d \n" , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
+
+                    //Close the socket and mark as 0 in list for reuse
+                    close( sd );
+                    client_socket[i] = 0;
+                }
+
+                //Other than that, we can now do some processing on the message!
+                else
+                {
+                    //set the string terminating NULL byte on the end of the data read
+                    buffer[valread] = '\0';
+                    send(sd , buffer , strlen(buffer) , 0 );
+                }
+            }
+        }
+    }
+
     return 0;
 }

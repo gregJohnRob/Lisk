@@ -20,19 +20,7 @@ $(EXE) : $(OBJECTS)
 		$(CC) $(CFLAGS) $^ -o $@
 
 #Smaller module compliations
-obj/Server.o : src/Server.c
-		$(CC) $(CLFAGS) -c $^ -o $@
-
-obj/Coms.o : src/Coms/Coms.c
-		$(CC) $(CFLAGS) -c $^ -o $@
-
-obj/Encode.o : src/Coms/Encode.c
-		$(CC) $(CLFAGS) -c $^ -o $@
-
-obj/Utils.o : src/Utils/Utils.c
-		$(CC) $(CLFAGS) -c $^ -o $@
-
-obj/Map.o : src/Game/Map.c
+obj/%.o : src/%.c
 		$(CC) $(CLFAGS) -c $^ -o $@
 
 #Make directories we require

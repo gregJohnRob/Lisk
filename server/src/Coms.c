@@ -24,9 +24,9 @@ void AcceptClients(int Serverfd)
   struct sockaddr_in Cli_addr;
   int NewClientfd = 0;
   Client_t NewClient;
+  Msg_t Welcome;
   socklen_t Clilen;
   unsigned char Buffer[5];
-  unsigned char *ptr_Buffer = Buffer;
 
   printf("> Waiting for clients... (%d / %d)\n", NumClients, MAX_CLIENTS);
 
@@ -49,13 +49,21 @@ void AcceptClients(int Serverfd)
       NumClients++;
 
       printf("> New Client (%d): %s\n", NumClients, IP);
-      EncodeMessage(ptr_Buffer, STATUS_OK, CODE_DATA);
+
+      Welcome.Code = STATUS_OK;
+      Welcome.Op = CODE_DATA;
+
+      EncodeMessage(&Buffer[0], &Welcome);
       Buffer[1] = (unsigned char)NewClient.id;
       SendMsg(NewClient, Buffer);
+
+
+        RecieveMsgs(NewClient.fd);
 
       printf("> Waiting for clients... (%d / %d)\n", NumClients, MAX_CLIENTS);
     }
   }
+
 }
 
 /* CloseAllClients
@@ -97,4 +105,49 @@ int SendMsg(Client_t Client, unsigned char Msg[])
     printf("ERROR> Couldn't send messge to Client (%d)\n", Client.id);
   }
   return n;
+}
+
+
+void RecieveMsgs(int fd)
+{
+  struct timeval tv;
+  fd_set rfds;
+  int retval = 0;
+  tv.tv_sec = 2;
+  tv.tv_usec = 0;
+  int i = 0;
+
+  for(i = 0; i < NumClients; i++)
+  {
+    FD_SET(Clients[i].fd, &rfds);
+  }
+
+  while (1)
+  {
+        retval = select(NumClients+ 1, &rfds, NULL, NULL, &tv);
+
+        if (retval == -1)
+        { perror("select()"); }
+        else if (retval)
+        {
+          for(i = 0; i < NumClients; i++)
+          {
+            if(FD_ISSET(Clients[i].fd, &rfds))
+            {
+              printf("Message on Client(%d): %s", Clients[i].id, Clients[i].IP);
+              sleep(5);
+            }
+          }
+        }
+        else
+        { printf("> No data within 2 second.\n"); }
+  }
+
+
+  unsigned char Buffer[5];
+  Msg_t Msg;
+  int n = read(fd,Buffer,5);
+  if (n < 0) { printf("%s\n", "ERROR> reading from socket");  }
+  DecodeMessage(&Buffer[0], &Msg);
+  printf("Message Got: (Valid? %d) ID - %d  STATUS - %d OP - %d\n", Msg.WasValid, Msg.Id, Msg.Code, Msg.Op);
 }
