@@ -5,10 +5,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "../Server.h"
+#include "Server.h"
 
 #if MAP_DEBUG
-  #include "../Game/Map.h"
+  #include "Map.h"
 #endif
 
 
@@ -20,5 +20,5 @@
 
 void rSeed(void);             //Seeds the Random Numbers with the current time
 unsigned int DiveRoll(void);  //Rolls a random dice number
-void Shuffle(int *, size_t);  //Shuffles a given array 
+void Shuffle(int *, size_t);  //Shuffles a given array
 #endif

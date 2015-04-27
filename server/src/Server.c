@@ -30,7 +30,9 @@ int main(int argc , char *argv[])
     struct sockaddr_in address;                 //Server address
     char buffer[1025];                          //Data buffer of 1K
     fd_set readfds;                             //Set of socket descriptors
-    char *message = "ECHO Daemon v1.0 \r\n";    //Welcome message
+    char *message = "ECHO Daemon v1.0 \r\n";    //Welcome message                               
+
+
     char *Fmessage = "ECHO Daemon v1.0\n> Client capacity full.";
 
     //Checking to see if we have a port number given as CLI args

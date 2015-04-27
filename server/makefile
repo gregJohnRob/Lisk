@@ -5,7 +5,7 @@ CFLAGS=-Wall
 
 EXE=bin/LiskServer
 
-OBJECTS = obj/Server.o obj/Coms.o obj/Encode.o obj/Utils.o obj/Map.o
+OBJECTS = obj/Server.o obj/Coms.o obj/Utils.o obj/Map.o obj/Game.o
 
 all: dirs $(EXE)
 

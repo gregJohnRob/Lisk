@@ -13,6 +13,9 @@
 #include <netinet/in.h>
 #include <sys/time.h>
 
+#include "Game.h"
+#include "Map.h"
+
 /* Declarations */
 #define DEFAULT_PORT 12345      //Default listening port
 #define MAX_CLIENTS  2          //Number of simulatenous clients
