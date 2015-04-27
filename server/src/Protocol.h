@@ -43,10 +43,17 @@
 #define STATUS_OK         0x0   //Return OK
 #define STATUS_FAIL       0x1   //Return FAIL
 #define STATUS_UNKNOWN    0x2   //Return Unknown
-#define STATUS_ERROR      0x3   //An error occured in packet. You need to resend.
+#define STATUS_FULL       0x3   //Return Server is under FULL CAPACITY
+#define STATUS_STATE      0x4   //Notifies of a state change
+#define STATUS_ERROR      0xF   //An error occured in packet. You need to resend.
 
 #define CODE_DATA         0x1   //Server message code for returning DATA_
 #define CODE_NODATA       0x2   //Server message code to say no DATA_ has been returned
+
+
+/* Data Type Values */
+#define DATA_ID           0x1   //Client ID number
+#define DATA_VERSION      0x2   //LISK Version Number
 
 
 //Special Message End Constant
@@ -58,11 +65,9 @@
 //Defines a message from Clients
 typedef struct Msg
 {
-  unsigned char WasValid;        //Flag if message was a message
-  unsigned char Id;              //ID of Client
-  unsigned char Code;            //Protocol code
-  unsigned char Op;              //Operation code
-  unsigned char Data[3];         //Data from message
+  short Code;            //Protocol code
+  short Op;              //Operation code
+  short Data[3];         //Data from message
 } Msg_t;
 
 #endif

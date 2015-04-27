@@ -30,22 +30,20 @@ int main(int argc , char *argv[])
     struct sockaddr_in address;                 //Server address
     char buffer[1025];                          //Data buffer of 1K
     fd_set readfds;                             //Set of socket descriptors
-    char *message = "ECHO Daemon v1.0 \r\n";    //Welcome message
-
-    char *Fmessage = "ECHO Daemon v1.0\n> Client capacity full.";
 
     //Checking to see if we have a port number given as CLI args
     if (argc == 2) {  PortNo = atoi(argv[1]);  printf("> Port given. Using port: %d\n", PortNo); }
     else { printf("> No port given. Using default: %d\n",DEFAULT_PORT); }
 
     /* Setup Game Here */
+
+    //Make sure to 0 the fd array so we don't send to random fds that doesn't exist
+    for (i = 0; i < MAX_CLIENTS; i++) { client_socket[i] = 0; }
+    gSetState(STATE_INIT, &client_socket[0]);    //Put Game in Setup state
     // TODO Pick a Map
     // TODO Load Map from File
     // TODO Seed Random Number Generator
     // TODO Any other Setup?
-
-    //Clear out the array of client Fds
-    for (i = 0; i < MAX_CLIENTS; i++) { client_socket[i] = 0; }
 
     //create a master socket
     if( (master_socket = socket(AF_INET , SOCK_STREAM , 0)) == 0)
@@ -86,6 +84,7 @@ int main(int argc , char *argv[])
     addrlen = sizeof(address);
     puts("Waiting for connections ...");
 
+    gSetState(STATE_WAITING_PLAYERS, &client_socket[0]); //Put game in waiting state, while we find players
 
     while(1)
     {
@@ -93,6 +92,8 @@ int main(int argc , char *argv[])
       //TODO Once connected populate the Map and start the Game
       //TODO Setup Game: Turn(s) etc
 
+      //Quick check incase we have everyone ready to play.
+      if (NumClients == MAX_CLIENTS) { gSetState(STATE_INGAME, &client_socket[0]); }
 
         //Clearing set and adding server socket for reading
         FD_ZERO(&readfds);
@@ -113,46 +114,51 @@ int main(int argc , char *argv[])
 
         if ((activity < 0) && (errno!=EINTR))  { printf("select error"); }
 
-        //First - CHeck master socket. If something here we have a new connection
+        //First - Check master socket. If something here we have a new connection
         if (FD_ISSET(master_socket, &readfds))
         {
-            if ((new_socket = accept(master_socket, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
+          if ((new_socket = accept(master_socket, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0)
+          {
+            perror("accept");
+            exit(EXIT_FAILURE);
+          }
+
+          //Helpful print message
+          printf("New connection , socket fd is %d , ip is : %s , port : %d \n" , new_socket , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
+
+          NumClients++;
+
+          //Make sure to refuse the connection if the game is in a playing state
+          //or if the maximum number of clients have been reached.
+          if( (NumClients > MAX_CLIENTS) || (gState() != STATE_WAITING_PLAYERS) )
+          {
+            NumClients--;
+            puts("> Client capcity full. CLosing new connection");
+            if( cSendClientCapacityMsg(new_socket) < 0 ) { perror("Failed to send FULL message"); }
+            close (new_socket);
+          }
+
+          //Otherwise, we can add them to the game, assign and ID
+          //and send off the welcome message to them.
+          else
+          {
+            //Send connection the info we require.
+            if( cSendClientIdMsg(new_socket) < 0 ) { perror("send"); }
+
+            puts("Welcome message sent successfully");
+
+            //Adding the new socket to the list of clients
+            for (i = 0; i < MAX_CLIENTS; i++)
             {
-                perror("accept");
-                exit(EXIT_FAILURE);
-            }
-
-            //Helpful print message
-            printf("New connection , socket fd is %d , ip is : %s , port : %d \n" , new_socket , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
-
-            NumClients++;
-            if( NumClients > MAX_CLIENTS)
-            {
-              NumClients--;
-              puts("> Client capcity full. CLosing new connection");
-              if( send(new_socket, Fmessage, strlen(Fmessage), 0) != strlen(Fmessage) ) { perror("Failed to send FULL message"); }
-              close (new_socket);
-            }
-            else
-            {
-              //send new connection greeting message
-              //TODO Add ID given
-              if( send(new_socket, message, strlen(message), 0) != strlen(message) ) { perror("send"); }
-
-              puts("Welcome message sent successfully");
-
-              //Adding the new socket to the list of clients
-              for (i = 0; i < MAX_CLIENTS; i++)
+              if( client_socket[i] == 0 )
               {
-                if( client_socket[i] == 0 )
-                {
-                  client_socket[i] = new_socket;
-                  printf("Adding to list of sockets as %d\n" , i);
-                  break;
-                }
+                client_socket[i] = new_socket;
+                printf("Adding to list of sockets as %d\n" , i);
+                break;
               }
             }
           }
+        }
 
         //If not on master, we have something from the clients!
         for (i = 0; i < MAX_CLIENTS; i++)
@@ -171,6 +177,7 @@ int main(int argc , char *argv[])
                     //Close the socket and mark as 0 in list for reuse
                     close( sd );
                     client_socket[i] = 0;
+                    NumClients--;
                 }
 
                 //Other than that, we can now do some processing on the message!
