@@ -31,6 +31,8 @@ int main(int argc , char *argv[])
     char buffer[1025];                          //Data buffer of 1K
     fd_set readfds;                             //Set of socket descriptors
 
+    Game_t game;                                //Game Config
+
     //Checking to see if we have a port number given as CLI args
     if (argc == 2) {  PortNo = atoi(argv[1]);  printf("> Port given. Using port: %d\n", PortNo); }
     else { printf("> No port given. Using default: %d\n",DEFAULT_PORT); }
@@ -39,7 +41,7 @@ int main(int argc , char *argv[])
 
     //Make sure to 0 the fd array so we don't send to random fds that doesn't exist
     for (i = 0; i < MAX_CLIENTS; i++) { client_socket[i] = 0; }
-    gSetState(STATE_INIT, &client_socket[0]);    //Put Game in Setup state
+    gSetState(&game, STATE_INIT, &client_socket[0]);    //Put Game in Setup state
     // TODO Pick a Map
     // TODO Load Map from File
     // TODO Seed Random Number Generator
@@ -84,16 +86,19 @@ int main(int argc , char *argv[])
     addrlen = sizeof(address);
     puts("Waiting for connections ...");
 
-    gSetState(STATE_WAITING_PLAYERS, &client_socket[0]); //Put game in waiting state, while we find players
+    gSetState(&game, STATE_WAITING_PLAYERS, &client_socket[0]); //Put game in waiting state, while we find players
 
     while(1)
     {
-      //TODO Wait for Number of Clients to connect
-      //TODO Once connected populate the Map and start the Game
-      //TODO Setup Game: Turn(s) etc
+      //Quick check incase we have everyone ready to play then start the game?!
+      if (NumClients == MAX_CLIENTS)
+      {
+        puts("> All players have joined. Starting game...");
+        gSetState(&game, STATE_INGAME, &client_socket[0]);
 
-      //Quick check incase we have everyone ready to play.
-      if (NumClients == MAX_CLIENTS) { gSetState(STATE_INGAME, &client_socket[0]); }
+        //TODO Once connected populate the Map and start the Game
+        //TODO Setup Game: Turn(s) etc
+      }
 
         //Clearing set and adding server socket for reading
         FD_ZERO(&readfds);
@@ -130,7 +135,7 @@ int main(int argc , char *argv[])
 
           //Make sure to refuse the connection if the game is in a playing state
           //or if the maximum number of clients have been reached.
-          if( (NumClients > MAX_CLIENTS) || (gState() != STATE_WAITING_PLAYERS) )
+          if( (NumClients > MAX_CLIENTS) || (game.State != STATE_WAITING_PLAYERS) )
           {
             NumClients--;
             puts("> Client capcity full. CLosing new connection");
@@ -143,7 +148,7 @@ int main(int argc , char *argv[])
           else
           {
             //Send connection the info we require.
-            if( cSendClientIdMsg(new_socket) < 0 ) { perror("send"); }
+            if( cSendClientIdMsg(new_socket, game.State) < 0 ) { perror("send"); }
 
             puts("Welcome message sent successfully");
 

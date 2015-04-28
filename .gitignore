@@ -4,7 +4,8 @@
 
 ToDo
 
-*.o
-*.so
-*.exe
-*.old
+*.o	#Objects
+*.so	
+*.exe	#Compiled programs
+*.old	#Old code files before being removed
+*.ods	#Bug DB

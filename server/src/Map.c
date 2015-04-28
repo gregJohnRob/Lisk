@@ -11,14 +11,14 @@
  * Creates a Map struct out of the given Map file as param
  * Returns either a pointer to the Map or NULL if there was an error
  */
-Map_t *mCreate(char* Filename)
+LiskMap_t *mCreate(char* Filename)
 {
   //char Buffer[256];     //Buffer for Connections
   const int LINE_MAX = 1024;  //Maximum line size
   char Line[LINE_MAX];  //Temp store for Line
   int Count = 0;
   FILE *mFile = fopen(Filename, "r");
-  Map_t *Map = (Map_t *) calloc(1, sizeof(Map_t));
+  LiskMap_t *Map = (LiskMap_t *) calloc(1, sizeof(LiskMap_t));
 
   //Error checking the file was opened right
   if(NULL == mFile) { printf("%s\n", "Map->mCreate: Failed to open map file."); return NULL; }
@@ -87,7 +87,7 @@ Map_t *mCreate(char* Filename)
 }
 
 //Frees all memory associated with the Map!
-void mDestory(Map_t *Map) { free(Map); }
+void mDestory(LiskMap_t *Map) { free(Map); }
 
 
 
@@ -105,7 +105,7 @@ void mDestory(Map_t *Map) { free(Map); }
  *      Loop back until ToDoSet is empty
  *
  */
-short mIsConnected(Map_t *Map, short A, short B)
+short mIsConnected(LiskMap_t *Map, short A, short B)
 {
   //First get Start Node
   Node_t Start = Map->Nodes[mGetNode(Map, A)];
@@ -148,7 +148,7 @@ short mIsConnected(Map_t *Map, short A, short B)
  *  Checks ID and also the Owner of the Node(s)
  *    Returns CONNECTED if they can attack or NOT_CONNECTED otherwise
  */
-short mCanAttack(Map_t *Map, short A, short B)
+short mCanAttack(LiskMap_t *Map, short A, short B)
 {
     Node_t Node = Map->Nodes[mGetNode(Map, A)];
     Node_t NodeB = Map->Nodes[mGetNode(Map,B)];
@@ -169,7 +169,7 @@ short mCanAttack(Map_t *Map, short A, short B)
  *  Similar to mIsConnected but checks ownership of the Node as well
  *  Returns CONNECTED if they are linked, or NOT_CONNECTED if not
  */
-short mCanMoveUnits(Map_t* Map, short A, short B)
+short mCanMoveUnits(LiskMap_t* Map, short A, short B)
 {
   //First get Start Node
   Node_t Start = Map->Nodes[mGetNode(Map, A)];
@@ -214,7 +214,7 @@ short mCanMoveUnits(Map_t* Map, short A, short B)
  *    Specify the number of players and the number of nodes/player
  *
  */
-void mPopulate(Map_t *Map, short Players, short Nodes)
+void mPopulate(LiskMap_t *Map, short Players, short Nodes)
 {
     short NodesPerPlayer = Nodes/Players;
     short GivenNodes = 0;
@@ -257,7 +257,7 @@ void mPopulate(Map_t *Map, short Players, short Nodes)
  *  Finds a node in a Map by it's Id
  * Returns position if found, else -1
  */
-short mGetNode(Map_t *Map, short N)
+short mGetNode(LiskMap_t *Map, short N)
 {
   int i = 0;
   for(i =0; i < Map->NodeCount; i++)

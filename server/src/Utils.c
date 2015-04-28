@@ -5,7 +5,7 @@
  *
  * Map DEBUG function to print out the contents of a Map
  */
-void printMap(Map_t *Map)
+void printMap(LiskMap_t *Map)
 {
    char Name[25];
    int Count = 0;

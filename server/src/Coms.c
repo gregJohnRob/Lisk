@@ -18,41 +18,37 @@
  *
  *    Data can use 1,2,3 slots.
  */
-void cEncodeMessage(short *Buffer, Msg_t *Msg)
+void cEncodeMessage(short *buffer, Msg_t *msg)
 {
-    short Head = 0;               //0000 0000 0000 0000
-    short Tail = 0xFF00;          //1111 1111 0000 0000
+  int i = 0;
 
-    Head = Msg->Code << 8;        //STATUS STATUS 0000 0000
-    Head = Head | 0x00FF;         //STATUS STATUS 1111 1111
+  buffer[0] = msg->Code;
+  buffer[1] = msg->Op;
+  buffer[2] = msg->DataSize;
 
-    Tail = Tail | Msg->Op;        //1111 1111 OPCODE OPCODE
+  for(i = 0 ; i < msg->DataSize; i++)
+  {
+      buffer[3+i] = msg->Data[i];
+  }
+  for(i = msg->DataSize - 1; i < 128; i++){ msg->Data[i] = 0; }
 
-    *(Buffer) = Tail & Head;      //STATUS STATUS OPCODE OPCODE
-    *(Buffer + 4) = MSG_END;
-
+  buffer[3 + msg->DataSize] = MSG_END;
 }
 
 /* DecodeMessage
  *  Decodes a message from recieved in Msg_t struct */
-void cDecodeMessage(short *InBuffer, Msg_t *OutBuffer)
+void cDecodeMessage(short *inBuffer, Msg_t *msg)
 {
-    short PCode;
-    short OpCode;
+  int i = 0;
 
-    //Perform char value halfing
-    PCode = *(InBuffer);      //P_CODE P_CODE OP_CODE OP_CODE
-    PCode = PCode & 0xFF00;   //P_Code P_CODE 0000 0000
-    PCode = PCode >> 8;       //0000 0000 P_CODE P_CODE
+  msg->Code = inBuffer[0];
+  msg->Op = inBuffer[1];
+  msg->DataSize = inBuffer[2];
 
-    OpCode = *(InBuffer) & 0x00FF;
-
-    //Fill out structure
-    OutBuffer->Code = PCode;
-    OutBuffer->Op = OpCode;
-    OutBuffer->Data[0] = *(InBuffer + 1);
-    OutBuffer->Data[1] = *(InBuffer + 2);
-    OutBuffer->Data[2] = *(InBuffer + 3);
+  for(i = 0 ; i < msg->DataSize; i++)
+  {
+      msg->Data[i]   = inBuffer[3+i];
+  }
 }
 
 
@@ -61,10 +57,11 @@ void cDecodeMessage(short *InBuffer, Msg_t *OutBuffer)
 int cSendClientCapacityMsg(int fd)
 {
   Msg_t msg;
-  short buffer[5];
+  short buffer[128];
 
   msg.Code = STATUS_FULL;
   msg.Op = CODE_NODATA;
+  msg.DataSize = 0;
   cEncodeMessage(&buffer[0], &msg);
 
   return write(fd, buffer, sizeof(buffer));
@@ -75,16 +72,17 @@ int cSendClientCapacityMsg(int fd)
 /* Send Client ID Message
  *    Sends the client their Id, LISK version and
  *    current game status */
-int cSendClientIdMsg(int fd)
+int cSendClientIdMsg(int fd, int state)
 {
   Msg_t msg;
-  short buffer[5];
+  short buffer[128];
 
   msg.Code = STATUS_OK;
   msg.Op = CODE_DATA;
-  buffer[1] = gGenId();
-  buffer[2] = VERSION_NUM;
-  buffer[3] = gState();
+  msg.Data[0] = gGenId();
+  msg.Data[1] = VERSION_NUM;
+  msg.Data[2] = state;
+  msg.DataSize = 3;
   cEncodeMessage(&buffer[0], &msg);
 
   return write(fd, buffer, sizeof(buffer));
@@ -94,47 +92,38 @@ int cSendClientIdMsg(int fd)
 
 /* Send Game State Changes Message
  *    Notifies all clients that the gate state has changed. */
-void cSendGameStateChangeMsg(int* fds)
+void cSendGameStateChangeMsg(int state, int* fds)
 {
   Msg_t msg;
-  short buffer[5];
+  short buffer[128];
 
   msg.Code = STATUS_STATE;
   msg.Op = CODE_DATA;
-  buffer[1] = gState();
+  msg.Data[0] = state;
+  msg.DataSize = 1;
   cEncodeMessage(&buffer[0], &msg);
 
-  cBroadcastMsg(&msg, fds);
+  cBroadcastMsg(&buffer[0], fds);
 }
-
-
-
-
-/* Write Message
- *    Writes a 10byte message to given fd */
-int cWriteMessage(short *buffer, int fd) { return write(fd, buffer, 5); }
-
 
 
 /* Broadcast Message
  *    Sends a message to all the fds of clients current connected on LISK
  *    TODO Not send to server
  */
-void cBroadcastMsg(Msg_t* msg, int *fds)
+void cBroadcastMsg(short msg[], int *fds)
 {
-  short buffer[5];
+  short len = 0;
   int i = 0;
   int sd = 0;
   int retval = 0;
-
-  cEncodeMessage(&buffer[0], msg);
 
   for(i = 0; i < MAX_CLIENTS; i++)
   {
       sd = fds[i];
       if(sd  >  0)
       {
-        retval = write(sd, buffer, sizeof(buffer));
+        retval = write(sd, msg, sizeof(len) * 128);
         if (retval < 0)
         {
           printf("WARN> Error sending message to client on fd (%d)\n", sd);

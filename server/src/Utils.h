@@ -14,7 +14,7 @@
 
 /* Prototypes */
 #if MAP_DEBUG
-  void printMap(Map_t *);
+  void printMap(LiskMap_t *);
 #endif
 
 

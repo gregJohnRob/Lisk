@@ -1,9 +1,18 @@
 Current Version: 0.2
 
+Version 0.3:
+SERVER:
+* Modified base server code with a different template
+* Condensed Encode and Coms source into Coms.c
+
+ - Remove some of the legacy client connection code
+
+
 Version 0.2 (B):
 SERVER:
 + Added a populate function to fill map with players
 + Added some random number utilities, with ability to seed and a dice rollers
+
 
 Version 0.2:
 SERVER:
@@ -27,7 +36,6 @@ TEST-CLIENT:
 
 
 Version 0.1: (D)
-----------------
 SERVER:
 + Decode function to pass in message(s) from clients to decode into parts
 
@@ -37,7 +45,6 @@ TEST-CLIENT:
 
 
 Version 0.1: (C)
-----------------
 SERVER:
 * Fixed server only accepting half the number of accepted clients
 
@@ -50,7 +57,6 @@ TEST-CLIENT:
 + Checking for welcome packet then shutdown
 
 Version 0.1: (B)
-----------------
 SERVER:
 - When server accepts new client uses client_t struct to store info
 - Added Protocol.h outlining message constants from client and to send
@@ -58,7 +64,6 @@ TEST-CLIENT:
 
 
 Version 0.1:
-------------
 SERVER:
 - Server Runs
 - Server Accepts upto MAX_CLIENTS

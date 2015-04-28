@@ -52,8 +52,9 @@
 
 
 /* Data Type Values */
-#define DATA_ID           0x1   //Client ID number
-#define DATA_VERSION      0x2   //LISK Version Number
+#define DATA_ID           0x21   //Client ID number
+#define DATA_VERSION      0x22   //LISK Version Number
+#define DATA_STATE        0x23   //Current Game State
 
 
 //Special Message End Constant
@@ -67,7 +68,8 @@ typedef struct Msg
 {
   short Code;            //Protocol code
   short Op;              //Operation code
-  short Data[3];         //Data from message
+  short Data[128];        //Data from message
+  short DataSize;        //Number of bits of data to send
 } Msg_t;
 
 #endif

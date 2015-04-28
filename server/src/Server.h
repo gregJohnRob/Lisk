@@ -13,9 +13,9 @@
 #include <netinet/in.h>
 #include <sys/time.h>
 
-#include "Game.h"
-#include "Coms.h"
 #include "Map.h"
+#include "Coms.h"
+#include "Game.h"
 
 /* Declarations */
 #define DEFAULT_PORT 12345      //Default listening port

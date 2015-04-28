@@ -1,13 +1,10 @@
-#ifndef MAP_H
-#define MAP_H
+#ifndef MAP_HEADER_G
+#define MAP_HEADER_G
 
 /* Includes */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "Server.h"
-#include "Utils.h"
 
 /* Declarations */
 #define NPC_ID 0xEE   //ID used if there is an NPC controlled Node on Map
@@ -32,7 +29,7 @@ typedef struct Map
   short Img;               //Associated Image ID of Map
   Node_t Nodes[128];          //Pointer to list of all Nodes
   short NodeCount;         //Number of Nodes
-} Map_t;
+} LiskMap_t;
 
 //LISK Linked List Node, when pathfinding between nodes
 typedef struct LLNode
@@ -57,24 +54,21 @@ typedef struct LList
 
 
 /* Prototypes */
-Map_t *mCreate(char *);                   //Creates a lovely new map from file
-void mDestory(Map_t *);                   //Free memory from Map
+LiskMap_t *mCreate(char *);                   //Creates a lovely new map from file
+void mDestory(LiskMap_t *);                   //Free memory from Map
 
-short mIsConnected(Map_t*, short, short); //Are the two given nodes connected?
-short mGetNode(Map_t*, short);            //Fetches a node by it's ID.
+short mIsConnected(LiskMap_t*, short, short); //Are the two given nodes connected?
+short mGetNode(LiskMap_t*, short);            //Fetches a node by it's ID.
 short IsInSet(LList_t *, short);          //Is the value in a set
 
-short mCanAttack(Map_t*, short, short);    //Checks if 2 nodes can attack each other
-short mCanMoveUnits(Map_t*, short, short); //Checks if one can move units between 2 nodes
+short mCanAttack(LiskMap_t*, short, short);    //Checks if 2 nodes can attack each other
+short mCanMoveUnits(LiskMap_t*, short, short); //Checks if one can move units between 2 nodes
 
-void mPopulate(Map_t *, short, short);     //Populates the given Map at the start of a game
+void mPopulate(LiskMap_t *, short, short);     //Populates the given Map at the start of a game
 
 
 //Linked List Functions
 void lAdd(LList_t *, short);              //Add item to Linked List
 short lRemove(LList_t *);                 //Remove Item from Linked list
-
-
-
 
 #endif
