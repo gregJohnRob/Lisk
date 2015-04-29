@@ -6,17 +6,26 @@
 #include <stdio.h>
 #include <string.h>
 
+
 /* Declarations */
 #define NPC_ID 0xEE   //ID used if there is an NPC controlled Node on Map
+
+//LISK CARD COLOURS
+#define CARD_RED              0x1
+#define CARD_BLUE             0x2
+#define CARD_GREEN            0x3
+#define CARD_YELLOW           0x4
+#define CARD_BLACK            0x0
 
 //LISK Map Node
 typedef struct Node
 {
-  short Id;                //Node Id
-  short Owner;             //Id of Player who owns it
+  short Id;               //Node Id
+  short Owner;            //Id of Player who owns it
   short Troops;           //No. of Troops at this node
   short X;                //Gird X location of Node
   short Y;                //Grid Y location of Node
+  short Colour;           //Node Colour
   short EdgeCount;        //Number of Edges
   short Edges[128];            //Pointer to Edges
 } Node_t;

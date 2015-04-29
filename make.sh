@@ -1,40 +1,39 @@
 #!/bin/bash
 
 #Checking for correct input
-if [ $# != 2 ]; then
-  echo "Usage: ./make PROJECT OPTION"
+if [ $# != 1 ]; then
+  echo "Usage: ./make OPTION"
   echo "See Building.txt for more info"
   exit 1
 fi
 
-#Checking for project now
 #Then check all options and call appriopriate make instructions
-if [ $1 == "server" ]; then
-  cd server
+if [ $1 == "-s" ]; then
+  make server
 
-  if [ $2 == "-n" ]; then
-    make
+elif [ $1 == "-c" ]; then
+  make client
 
-  elif [ $2 == "-d" ]; then
-      make debug
+elif [ $1 == "-r" ]; then
+  make clean
 
-  elif [ $2 == "-r" ]; then
-      make release
+elif [ $1 == "-fr" ]; then
+  make fullclean
 
-  elif [ $2 == "-c" ]; then
-      make clean
+elif [ $1 == "-a" ]; then
+  make server
+  make client
 
-  elif [ $2 == "-f" ]; then
-      make fullclean
-  else
-    echo "Invalid option"
-  fi
+elif [ $1 == "-rc" ]; then
+  make clean_c
 
-elif [ $1 == "client" ]; then
-  echo "Not yet implemented..."
+elif [ $1 == "-rs" ]; then
+  make clean_s
+
 else
-  echo "Invalid Project"
-
+  echo "Invalid option"
+  echo "See Building.txt for more info"
 fi
+
 
 exit 0

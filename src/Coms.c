@@ -1,3 +1,4 @@
+#include "Encode.h"
 #include "Coms.h"
 
 /* Coms.c
@@ -6,51 +7,6 @@
  *
  * Author: Ewan McCartney
  */
-
-
-/* EncodeMessage
- *    Encodes a message into the provided buffer
- *    NOTE: Any further data must be added before sending
- *
- *    Message:
- *    [0] = STATUS | DATA FLAG
- *    [4] = MSG_END
- *
- *    Data can use 1,2,3 slots.
- */
-void cEncodeMessage(short *buffer, Msg_t *msg)
-{
-  int i = 0;
-
-  buffer[0] = msg->Code;
-  buffer[1] = msg->Op;
-  buffer[2] = msg->DataSize;
-
-  for(i = 0 ; i < msg->DataSize; i++)
-  {
-      buffer[3+i] = msg->Data[i];
-  }
-  for(i = msg->DataSize - 1; i < 128; i++){ msg->Data[i] = 0; }
-
-  buffer[3 + msg->DataSize] = MSG_END;
-}
-
-/* DecodeMessage
- *  Decodes a message from recieved in Msg_t struct */
-void cDecodeMessage(short *inBuffer, Msg_t *msg)
-{
-  int i = 0;
-
-  msg->Code = inBuffer[0];
-  msg->Op = inBuffer[1];
-  msg->DataSize = inBuffer[2];
-
-  for(i = 0 ; i < msg->DataSize; i++)
-  {
-      msg->Data[i]   = inBuffer[3+i];
-  }
-}
-
 
 /* Send Client Capcity Message
  *    Sends a short repsonce to clients saying that the capcity of the server is MAX */

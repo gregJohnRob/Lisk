@@ -25,7 +25,16 @@ typedef struct Game
 {
   short Map;      //ID of Map
   short State;    //Game state
+  short CardBonus;//Bonus for cards
 } Game_t;
+
+//Lisk Card Struct
+typedef struct Card
+{
+  short Id;       //Card ID
+  char *Name;     //Card Name
+  short Colour;   //Card Colour
+} Card_t;
 
 
 /* Prototypes */
@@ -35,5 +44,6 @@ short gState(void);                     //Returns current state of the game
 void gSetState(Game_t *, int, int *);   //Set game's current state
 
 short gTroopsPerTurn(LiskMap_t *, Player_t *);  //Returns the number of troops player gets this turn
+short gTradeCards(Game_t *, Card_t *, int);               //Trades in the number of cards
 
 #endif

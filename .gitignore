@@ -1,11 +1,11 @@
 # Ignored
-/server/obj
-/server/bin
+/obj
+/bin
 
 ToDo
 
 *.o	#Objects
-*.so	
+*.so
 *.exe	#Compiled programs
 *.old	#Old code files before being removed
 *.ods	#Bug DB
