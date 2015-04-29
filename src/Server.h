@@ -13,7 +13,6 @@
 #include <netinet/in.h>
 #include <sys/time.h>
 
-#include "Map.h"
 #include "Coms.h"
 #include "Game.h"
 

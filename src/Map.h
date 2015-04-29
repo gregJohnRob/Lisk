@@ -29,16 +29,16 @@ typedef struct Node
   short Y;                //Grid Y location of Node
   short Colour;           //Node Colour
   short EdgeCount;        //Number of Edges
-  short Edges[128];            //Pointer to Edges
+  short Edges[128];       //Pointer to Edges
 } Node_t;
 
 
 //LISK Map Description
-typedef struct Map
+typedef struct LiskMap
 {
   char Name[24];          //Map name
   short Img;               //Associated Image ID of Map
-  Node_t Nodes[128];          //Pointer to list of all Nodes
+  struct Node Nodes[128];          //Pointer to list of all Nodes
   short NodeCount;         //Number of Nodes
 } LiskMap_t;
 

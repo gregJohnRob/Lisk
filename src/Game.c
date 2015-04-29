@@ -94,7 +94,7 @@ Msg_t gAttack(LiskMap_t *map, int attacker, int defender)
     if (canAttack == NOT_CONNECTED)
     {
       msg.Code = STATUS_FAIL;
-      msg.Op = NO_DATA;
+      msg.Op = CODE_NODATA;
       msg.DataSize = 0;
     }
     else
@@ -122,7 +122,7 @@ Msg_t gAttack(LiskMap_t *map, int attacker, int defender)
       if (aDice == 0 )
       {
         msg.Code = STATUS_FAIL;
-        msg.Op = NO_DATA;
+        msg.Op = CODE_NODATA;
         msg.DataSize = 0;
       }
 
@@ -174,7 +174,7 @@ Msg_t gAttack(LiskMap_t *map, int attacker, int defender)
         map->Nodes[attacker].Troops--;
         wasConq = 100;
       }
-      else if (map->Node[defender].Troops < 0 && map->Nodes[attacker].Troops < 2)
+      else if (map->Nodes[defender].Troops < 0 && map->Nodes[attacker].Troops < 2)
       {
         map->Nodes[defender].Troops = 1;
         map->Nodes[defender].Owner = NPC_ID;
@@ -182,7 +182,7 @@ Msg_t gAttack(LiskMap_t *map, int attacker, int defender)
       }
 
       msg.Code = STATUS_OK;
-      msg.OP = DATA;
+      msg.Op = CODE_DATA;
 
       msg.Data[0] = wasConq;
       msg.Data[1] = aKills;

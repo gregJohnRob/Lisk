@@ -45,7 +45,7 @@ void uSortHigh(unsigned int *array, int size)
   int i = 0;
   int j = 0;
 
-  for(int i = 0; i < size; i++)
+  for(i = 0; i < size; i++)
   {
     unsigned int m = i;
     unsigned int t = 0;
