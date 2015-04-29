@@ -1,56 +1,9 @@
 #include "Utils.h"
 
-#if MAP_DEBUG
-/* printMap
- *
- * Map DEBUG function to print out the contents of a Map
- */
-void printMap(LiskMap_t *Map)
-{
-   char Name[25];
-   int Count = 0;
-   int iCount = 0;
-   strcpy(Name, Map->Name);
-   Name[24] = '\0';
-
-  printf("Map Output>:\n Name:%s Image ID: %d\n Node Count: %d\n",
-                                                  Name,
-                                                  Map->Img,
-                                                  Map->NodeCount);
-
-  printf("%s\n", "[Nodes]");
-
-  for(Count = 0; Count < Map->NodeCount; Count++)
-  {
-    Node_t Node = Map->Nodes[Count];
-    char sID[2];
-    sID[0] = Node.Id;
-    sID[1] = '\0';
-
-    printf("Node (%d)\n Owner: %d\n Troops: %d\n (X,Y): (%d,%d)\n Has %d Edge(s)\n--\n",
-                                                  atoi(sID),
-                                                  Node.Owner,
-                                                  Node.Troops,
-                                                  Node.X,
-                                                  Node.Y,
-                                                  Node.EdgeCount);
-
-    printf("%s\n", "[Edges]");
-    for(iCount = 0; iCount < Node.EdgeCount; iCount++)
-    {
-      printf("->%d\n", Node.Edges[iCount]);
-
-    }
-
-    printf("%s\n", "--");
-  }
-}
-#endif
-
 /* rSeed
  *  Seeds the Random number generator with the current system time.
  */
-void rSeed()
+void uRSeed()
 {
   srand(time(NULL));
 }
@@ -59,7 +12,7 @@ void rSeed()
 /* DiceRoll
  * Returns a number in the range  1->6 as if a dice was being rolled.
  */
-unsigned int DiceRoll(void) {
+unsigned int uDiceRoll(void) {
     return 1 + (rand() * 6.0 / RAND_MAX);
 }
 
@@ -69,7 +22,7 @@ unsigned int DiceRoll(void) {
  * Arrange the N elements of ARRAY in random order, only effective if N is
  * less than RAND_MAX
  */
-void Shuffle(int *array, size_t n)
+void uShuffle(int *array, size_t n)
 {
     if (n > 1)
     {
@@ -82,4 +35,28 @@ void Shuffle(int *array, size_t n)
 	        array[i] = t;
 	     }
     }
+}
+
+
+/* Sort Highest
+ *  Simple insertion sort on a given array */
+void uSortHigh(unsigned int *array, int size)
+{
+  int i = 0;
+  int j = 0;
+
+  for(int i = 0; i < size; i++)
+  {
+    unsigned int m = i;
+    unsigned int t = 0;
+
+    for(j = i; i < size; j++)
+    {
+      if (array[j] > array[m]) { m = j; }
+    }
+
+    t = array[i];
+    array[i] = array[m];
+    array[m] = t;
+  }
 }

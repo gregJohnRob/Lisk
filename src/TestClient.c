@@ -40,9 +40,15 @@ int main(int argc, char *argv[])
     short buffer[256];
     if (argc != 2)
     {
+       puts("Not enough args :(\n");
        printf("%s", "Usage: ./client HostName:Port\n");
        exit(1);
     }
+
+    //TODO Needs some for of error checking to make sure we have
+    // IP:Port
+
+
     char *hostname;
     char *delim = ":";
 

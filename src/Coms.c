@@ -87,3 +87,14 @@ void cBroadcastMsg(short msg[], int *fds)
       }
   }
 }
+
+
+/* Send Attack Message
+ *    Sends the resulting message from gAttack method */
+int csendAttackMsg(int fd, Msg_t* msg)
+{
+    short buffer[128];
+    cEncodeMessage(&buffer[0], msg);
+
+    return write(fd, buffer, sizeof(buffer));
+}

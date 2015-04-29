@@ -1,4 +1,22 @@
-Current Version: 0.2
+Current Version: 0.3
+
+Version 0.3 (C):
+SERVER:
++ Attack method implemented
+
+CLIENT:
+
+
+
+Version 0.3 X:
+** Merged Client and Server source folders into 1 and fixed makefile issues **
+* Had to move Encode/Decode back into different files for common, shared codebase *
+
+Version 0.3 (B):
+SERVER:
+* Fixed bug with broadcasting a message
+* Fixed Map_t linking issues
+
 
 Version 0.3:
 SERVER:

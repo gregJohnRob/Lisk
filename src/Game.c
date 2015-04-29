@@ -78,3 +78,122 @@ short gTradeCards(Game_t *game, Card_t *cards, int numCards)
 
     return troops;
 }
+
+
+/* Attack
+ *    Performs an attacking phase between 2 nodes
+ *  Checks if the attacker/defender are adjacent in the Map
+ *  Works out No. dice/player
+ *  Rolls and sends message back about who won/lost */
+Msg_t gAttack(LiskMap_t *map, int attacker, int defender)
+{
+    Msg_t msg;
+    short canAttack = mCanAttack(map, attacker, defender);
+
+    //Just making sure we're connected
+    if (canAttack == NOT_CONNECTED)
+    {
+      msg.Code = STATUS_FAIL;
+      msg.Op = NO_DATA;
+      msg.DataSize = 0;
+    }
+    else
+    {
+      Node_t aNode = map->Nodes[attacker];
+      Node_t dNode = map->Nodes[defender];
+      short aDice = 0;
+      short dDice = 2;
+      short aKills = 0;
+      short dKills = 0;
+      short wasConq = 0;
+      unsigned int aRolls[3] = { 0, 0, 0};
+      unsigned int dRolls[2] = { 0, 0};
+      int i = 0;
+
+      switch (aNode.Troops)
+      {
+        case 1: { aDice = 0; }
+        case 2: { aDice = 1; }
+        case 3: { aDice = 2; }
+        default: { aDice = 3; }
+      }
+
+      //If only 1 troop, we can't attack can we?
+      if (aDice == 0 )
+      {
+        msg.Code = STATUS_FAIL;
+        msg.Op = NO_DATA;
+        msg.DataSize = 0;
+      }
+
+      if (dNode.Troops == 1 ) { dDice = 1; }
+
+      //Dice Rolls
+      for( i = 0; i < aDice; i++) { aRolls[i] = uDiceRoll(); }
+      for( i = 0; i < dDice; i++) { dRolls[i] = uDiceRoll(); }
+
+      uSortHigh(aRolls, 3);
+      uSortHigh(dRolls, 2);
+
+      for(i = 0; i < 2; i++)
+      {
+        short a = aRolls[i];
+        short d = dRolls[i];
+
+        if (d == 0 && a == 0) { break; }
+        else
+        {
+          if (a > d) { aKills++; }
+          else { dKills++; }
+        }
+      }
+
+      map->Nodes[attacker].Troops -= dKills;
+      map->Nodes[defender].Troops -= aKills;
+
+      //All of attackers troops die, and so defender gains it.
+      if (map->Nodes[attacker].Troops < 0 && map->Nodes[defender].Troops >= 2)
+      {
+        map->Nodes[attacker].Troops = 1;
+        map->Nodes[attacker].Owner = map->Nodes[defender].Owner;
+
+        map->Nodes[defender].Troops--;
+        wasConq = 100;
+      }
+      else if (map->Nodes[attacker].Troops < 0 && map->Nodes[defender].Troops < 2)
+      {
+          map->Nodes[attacker].Troops = 1;
+          map->Nodes[attacker].Owner = NPC_ID;
+          wasConq = 100;
+      }
+      else if (map->Nodes[defender].Troops < 0 && map->Nodes[attacker].Troops >= 2)
+      {
+        map->Nodes[defender].Troops = 1;
+        map->Nodes[defender].Owner = map->Nodes[attacker].Owner;
+
+        map->Nodes[attacker].Troops--;
+        wasConq = 100;
+      }
+      else if (map->Node[defender].Troops < 0 && map->Nodes[attacker].Troops < 2)
+      {
+        map->Nodes[defender].Troops = 1;
+        map->Nodes[defender].Owner = NPC_ID;
+        wasConq = 100;
+      }
+
+      msg.Code = STATUS_OK;
+      msg.OP = DATA;
+
+      msg.Data[0] = wasConq;
+      msg.Data[1] = aKills;
+      msg.Data[2] = dKills;
+      msg.Data[3] = aRolls[0];
+      msg.Data[4] = aRolls[1];
+      msg.Data[5] = aRolls[2];
+      msg.Data[6] = dRolls[0];
+      msg.Data[7] = dRolls[1];
+      msg.DataSize = 8;
+    }
+
+    return msg;
+}

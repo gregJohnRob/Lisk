@@ -42,6 +42,8 @@ int main(int argc , char *argv[])
     //Make sure to 0 the fd array so we don't send to random fds that doesn't exist
     for (i = 0; i < MAX_CLIENTS; i++) { client_socket[i] = 0; }
     gSetState(&game, STATE_INIT, &client_socket[0]);    //Put Game in Setup state
+    uRSeed();
+
     // TODO Pick a Map
     // TODO Load Map from File
     // TODO Seed Random Number Generator

@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "Utils.h"
+
 
 /* Declarations */
 #define NPC_ID 0xEE   //ID used if there is an NPC controlled Node on Map

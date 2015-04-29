@@ -11,6 +11,11 @@
 #define STATE_WAITING_PLAYERS 0x1        //Waiting for player
 #define STATE_INGAME          0x2        //Playing state
 
+#define STATE_T_CARD          0x0
+#define STATE_T_PLACE         0x1
+#define STATE_T_ATTACK        0x2
+#define STATE_T_FORTIFY       0x3
+
 
 // Player Information Struct
 typedef struct Player
@@ -23,9 +28,11 @@ typedef struct Player
 // Game Information Struct
 typedef struct Game
 {
-  short Map;      //ID of Map
-  short State;    //Game state
-  short CardBonus;//Bonus for cards
+  short Map;                //ID of Map
+  short State;              //Game state
+  short CardBonus;          //Bonus for cards
+  Player_t CurrentPlayer;   //Current Player of Turn
+  short TurnState;          //State of given turn
 } Game_t;
 
 //Lisk Card Struct
@@ -44,6 +51,8 @@ short gState(void);                     //Returns current state of the game
 void gSetState(Game_t *, int, int *);   //Set game's current state
 
 short gTroopsPerTurn(LiskMap_t *, Player_t *);  //Returns the number of troops player gets this turn
-short gTradeCards(Game_t *, Card_t *, int);               //Trades in the number of cards
+short gTradeCards(Game_t *, Card_t *, int);     //Trades in the number of cards
+Msg_t gAttack(ListMap_t *, int, int);           //Attack Command
+
 
 #endif

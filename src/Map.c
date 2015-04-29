@@ -224,7 +224,7 @@ void mPopulate(LiskMap_t *Map, short Players, short Nodes)
 
     //Fill up Ids into buffer then shuffle it for population
     for(i = 0; i < Map->NodeCount; i++) { NodeIds[i] = i; }
-    Shuffle(&NodeIds[0], Map->NodeCount);
+    uShuffle(&NodeIds[0], Map->NodeCount);
 
     //Setting up all player locations
     while( GivenNodes < NodesPerPlayer)
