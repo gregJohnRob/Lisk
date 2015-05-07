@@ -11,6 +11,9 @@ S_OBJECTS = obj/Server.o obj/Coms.o obj/Utils.o obj/Map.o obj/Game.o obj/Encode.
 C_EXE=bin/TestClient
 C_OBJECTS = obj/TestClient.o obj/Encode.o
 
+#Lib files
+LIBS=-lncurses
+
 
 # ------
 # Targets
@@ -39,11 +42,11 @@ dirs:
 
 #Main Server Target
 $(S_EXE) : $(S_OBJECTS)
-		$(CC) $(CFLAGS) $^ -o $@
+		$(CC) $(CFLAGS) $? -o $@
 
 #Main Client
 $(C_EXE) : $(C_OBJECTS)
-		$(CC) $(CFLAGS) $^ -o $@
+		$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
 #Smaller module compliations
 obj/%.o : src/%.c

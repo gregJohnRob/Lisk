@@ -17,14 +17,19 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
+//Better terminal output :)
+#include <ncurses.h>
+
+
+#include "Client.h"
 #include "Protocol.h"
 #include "Encode.h"
-
 
 /* Prints out an error message to stderr then exits program */
 void error(const char *msg)
 {
-    perror(msg);
+    endwin();
+    puts(msg);
     exit(1);
 }
 
@@ -35,19 +40,27 @@ int main(int argc, char *argv[])
     int sockfd, portno, n;          //File descriptor, Server port and retrun value
     struct sockaddr_in serv_addr;   //Address of the Server
     struct hostent *server;         //Pointer to server description struct
+    short buffer[128];              //Data buffer for send/recieve
+    Msg_t msg;                      //Message buffer for sending/receiving
+    short thisId = 0;               //Client ID
 
     //Checking CLI args for host and port
-    short buffer[256];
     if (argc != 2)
     {
-       puts("Not enough args :(\n");
        printf("%s", "Usage: ./client HostName:Port\n");
        exit(1);
     }
 
+    /* Setup the window in curses mode! */
+    initscr();
+    printw("LISK Test Client\n");
+    printw("Version: %s (%d)\n", VERSION, VERSION_NUM );
+
+    printw("> Attempting connection to LISK Server. Please wait...\n");
+    refresh();
+
     //TODO Needs some for of error checking to make sure we have
     // IP:Port
-
 
     char *hostname;
     char *delim = ":";
@@ -87,6 +100,43 @@ int main(int argc, char *argv[])
     {
         error("ERROR connecting");
     }
+
+    //After initial connect - Read a message from the Server with our id number :)
+    readMessage(sockfd, &buffer[0]);
+    cDecodeMessage(&buffer[0], &msg);
+
+    //Need to check if our server is currently full.
+    if (msg.Code == STATUS_FULL)
+    {
+      clear();
+      printw("Message> ERROR: Client Capacity full!\n");
+      printw("\nPress any key to continue...");
+      getch();
+      endwin();
+      return 0;
+    }
+
+    if (msg.Code == STATUS_OK && msg.DataSize == 3)
+    {
+        printw("> Client ID = %d\n", msg.Data[0]);
+        printw("> LISK SERVER Version: %d\n", msg.Data[1]);
+
+        if (msg.Data[2] == STATE_WAITING_PLAYERS)
+        {
+          printw(">> Waiting for game to start...\n");
+        }
+    }
+
+    //Wait until we get a status update....
+    while(msg.Code != STATUS_STATE)
+    {
+      readMessage(sockfd, &buffer[0]);
+      cDecodeMessage(&buffer[0], &msg);
+    }
+    printw("READY TO START PLAYING!");
+    getch();
+    endwin();
+    return 0;
 
     /* Get input from user and send to server */
     //printf("Please enter the message: ");
@@ -143,7 +193,8 @@ int main(int argc, char *argv[])
   }
   */
 
-    printf("> Shutting down...\n\n");
+    printw("\n> Shutting down...");
+    endwin();			/* End curses mode		  */
     close(sockfd);
     return 0;
 }
@@ -181,23 +232,19 @@ void mGet(int sFd, int mId)
             berst = 2002; }
         }
   }
-
-
-
 }
 
 
-void Render(void)
+//Reads Message from Server
+void readMessage(int fd, short *buffer)
 {
-  int x = 0;
-  int y = 0;
+  int n = 0;
 
-  for(x = 0; x < 32; x++)
+  n = read(fd,buffer,128);
+  if (n < 0)
   {
-    for(y = 0; y < 32; x++)
-    {
-      printf("%c ", Renderable[x][y]);
-    }
-    printf("%c", '\n');
+    error("ERROR reading from socket");
   }
+
+  printw("Mesasge Recieved");
 }

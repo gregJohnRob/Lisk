@@ -167,6 +167,7 @@ void cPGame(Msg_t *msg, int c)
         break;
       }
 
+
     case GAME_P3: { break; }            //TODO Phase 3 -> Attack  - ENTER PHASE
     case GAME_P4: { break; }            //TODO Phase 4 -> Fortify - ENTER PHASE
 
