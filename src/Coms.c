@@ -98,3 +98,98 @@ int csendAttackMsg(int fd, Msg_t* msg)
 
     return write(fd, buffer, sizeof(buffer));
 }
+
+
+/* Given a message from the client
+ * decodes what should be done
+ * passing it off to specific function to handle
+ * that code's operation
+ *
+ * msg = Message read
+ * C = Fd of client
+ */
+void cProcessMessage(Msg_t *msg, int c)
+{
+    switch(msg->Code)
+    {
+      case CODE_SERV:  { cPServ(msg, c);  break; }
+      case CODE_GAME:  { cPGame(msg, c);  break; }
+      case CODE_ADMIN: { cPAdmin(msg, c); break;}
+      default:
+      {
+        cPUnknown(msg, c);
+        break;
+      }
+    }
+}
+
+
+/* Handles server message code */
+void cPServ(Msg_t *msg, int c)
+{
+  switch (msg->Op)
+  {
+    case SERV_GAMELIST: { break; }        //TODO Get Gamelist
+    case SERV_PLAYERINFO: { break; }      //TODO Get Playerinfo
+    case SERV_GAMEINFO: { break; }        //TODO Get Game Info (Players, rounds, times)
+    case SERV_GAME: { break; }            //TODO Get Game (Map ID / Placements)
+    case SERV_JOIN: { break; }            //TODO Player joins Game
+    case SERV_LEAVE: { break; }           //TODO Lave Game
+    default:
+    {
+      cPUnknown(msg, c);
+      break;
+    }
+  }
+}
+
+
+/* Handles Game message code */
+void cPGame(Msg_t *msg, int c)
+{
+  switch (msg->Op)
+  {
+    case GAME_START: { break; }         //TODO Turn Start
+    case GAME_END: { break; }           //TODO Turn End
+    case GAME_P1: { break; }            //TODO Phase 1 -> Cards - ENTER PHASE
+    case GAME_P2: { break; }            //TODO Phase 2 -> Placement - ENTER PHASE
+    case GAME_P3: { break; }            //TODO Phase 3 -> Attack  - ENTER PHASE
+    case GAME_P4: { break; }            //TODO Phase 4 -> Fortify - ENTER PHASE
+    case GAME_PLACE: { break; }         //TODO Place Troops
+    case GAME_ATTACK: { break; }        //TODO Perform attack
+    case GAME_FORTIFY: { break; }       //TODO Fortify place
+    case GAME_TRADE: { break; }         //TODO Trade in cards
+    case GAME_INFO: { break; }          //TODO Return game info
+    case GAME_TIME: { break; }          //TODO return target time for move/turn
+    default:
+    {
+      cPUnknown(msg, c);
+      break;
+    }
+  }
+}
+
+/* Handles Admin message code
+ * Nothing actually is defined
+ * for admin but is here when
+ * required */
+void cPAdmin(Msg_t *msg, int c)
+{
+  puts("Admin reques recieved. How did this get here? ");
+  cPUnknown(msg, c);
+}
+
+
+/* Handles an unknown message code */
+void cPUnknown(Msg_t *msg, int c)
+{
+  Msg_t rmsg;
+  short buffer[128];
+  rmsg.Code = STATUS_UNKNOWN;
+  rmsg.Op = CODE_NODATA;
+  rmsg.DataSize = 0;
+  cEncodeMessage(&buffer[0], &rmsg);
+
+  int val =  write(c, buffer, sizeof(buffer));
+  if (val < 0 ) { printf("Error sending MSG_UNKNOWN to client (%d)", val); }
+}

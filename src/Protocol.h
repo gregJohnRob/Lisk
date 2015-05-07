@@ -17,11 +17,11 @@
 #define SERV_LEAVE        0x5   //Leave Game
 
 /* Admin Commands */
-#define ADMIN_CODE        0x1   //Special Admin code, reserved if required
+#define CODE_ADMIN        0x1   //Special Admin code, reserved if required
 
 
 /* Game Specific Commands */
-#define GAME_CODE         0x2   //Server message code for all GAME_ commands
+#define CODE_GAME         0x2   //Server message code for all GAME_ commands
 
 #define GAME_START        0x0   //Start Turn
 #define GAME_END          0x1   //End Turn

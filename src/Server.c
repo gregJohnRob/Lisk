@@ -28,7 +28,7 @@ int main(int argc , char *argv[])
     int max_sd = 0;                             //Highest fd
     int NumClients = 0;                         //Number of connected clients
     struct sockaddr_in address;                 //Server address
-    char buffer[1025];                          //Data buffer of 1K
+    short buffer[128];                          //Data buffer
     fd_set readfds;                             //Set of socket descriptors
 
     Game_t game;                                //Game Config
@@ -195,9 +195,12 @@ int main(int argc , char *argv[])
                 //TODO Add check at top of Loop if the game state has changed or something?
                 else
                 {
+                    Msg_t msg;
+                    cDecodeMessage(&buffer[0], &msg);
+                    cProcessMessage(&msg, sd);
                     //set the string terminating NULL byte on the end of the data read
-                    buffer[valread] = '\0';
-                    send(sd , buffer , strlen(buffer) , 0 );
+                    //buffer[valread] = '\0';
+                    //send(sd , buffer , strlen(buffer) , 0 );
                 }
             }
         }
