@@ -31,17 +31,38 @@ void gSetState(Game_t *game, int nState, int *fds) {
 /* Troops Per Turn
  *    Returns the number of troops the given player
  *    will recieve at the start of the turn */
-short gTroopsPerTurn(LiskMap_t *map, Player_t *player)
+short gTroopsPerTurn(int id)
 {
   int i = 0;
   short troops = 0;
   for(i = 0; i < Map->NodeCount; i++)
   {
-      if (Map->Nodes[i].Owner == player->Id) { troops++; }
+      if (Map->Nodes[i].Owner == id) { troops++; }
   }
 
-  return troops / 3;
+  //Error check
+  if (troops <= 0 ) { return -99; }
+
+  troops /= 3;
+  if (troops < 3) { troops = 3; }
+
+  return troops;
 }
+
+/* Place Troops
+ *  Places troops in given location if successful
+ */
+short gPlaceTroops(int id, int pid, int troops)
+{
+  if (Map->Nodes[pid].Owner != id) { return -99; }
+  else
+  {
+    Map->Nodes[pid].Troops += troops;
+  }
+
+  return 0;
+}
+
 
 
 /* Total Troops

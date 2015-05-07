@@ -1,5 +1,7 @@
-#include "Encode.h"
 #include "Coms.h"
+#include "Encode.h"
+#include "Server.h"
+#include "Messages.h"
 
 /* Coms.c
  *
@@ -147,15 +149,36 @@ void cPServ(Msg_t *msg, int c)
 /* Handles Game message code */
 void cPGame(Msg_t *msg, int c)
 {
+  Msg_t rmsg;
+  short buffer[128];
+
   switch (msg->Op)
   {
     case GAME_START: { break; }         //TODO Turn Start
     case GAME_END: { break; }           //TODO Turn End
     case GAME_P1: { break; }            //TODO Phase 1 -> Cards - ENTER PHASE
-    case GAME_P2: { break; }            //TODO Phase 2 -> Placement - ENTER PHASE
+
+    case GAME_P2:   //Sends out the number of troops player can place
+      {
+        rmsg = mTroopMessage(msg->Data[0]);
+        cEncodeMessage(&buffer[0], &rmsg);
+        int val =  write(c, buffer, sizeof(buffer));
+        if (val < 0 ) { printf("Error sending MSG_TROOPS to client (%d)", c); }
+        break;
+      }
+
     case GAME_P3: { break; }            //TODO Phase 3 -> Attack  - ENTER PHASE
     case GAME_P4: { break; }            //TODO Phase 4 -> Fortify - ENTER PHASE
-    case GAME_PLACE: { break; }         //TODO Place Troops
+
+    case GAME_PLACE:  //Places troops and returns a success or fail message
+      {
+        rmsg = mPlaceMessage(msg->Data, msg->DataSize);
+        cEncodeMessage(&buffer[0], &rmsg);
+        int val =  write(c, buffer, sizeof(buffer));
+        if (val < 0 ) { printf("Error sending MSG_TROOPS to client (%d)", c); }
+        break;
+      }
+
     case GAME_ATTACK: { break; }        //TODO Perform attack
     case GAME_FORTIFY: { break; }       //TODO Fortify place
     case GAME_TRADE: { break; }         //TODO Trade in cards
@@ -191,5 +214,5 @@ void cPUnknown(Msg_t *msg, int c)
   cEncodeMessage(&buffer[0], &rmsg);
 
   int val =  write(c, buffer, sizeof(buffer));
-  if (val < 0 ) { printf("Error sending MSG_UNKNOWN to client (%d)", val); }
+  if (val < 0 ) { printf("Error sending MSG_UNKNOWN to client (%d)", c); }
 }

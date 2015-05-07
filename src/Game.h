@@ -50,9 +50,11 @@ short gGenId(void);                     //Gives a client a unique ID to use in-g
 short gState(void);                     //Returns current state of the game
 void gSetState(Game_t *, int, int *);   //Set game's current state
 
-short gTroopsPerTurn(struct LiskMap *, Player_t *);  //Returns the number of troops player gets this turn
-short gTradeCards(Game_t *, Card_t *, int);     //Trades in the number of cards
-Msg_t gAttack(struct LiskMap *, int, int);           //Attack Command
+
+short gPlaceTroops(int, int, int);          //Place troops at given Id
+short gTroopsPerTurn(int);                  //Returns the number of troops player gets this turn
+short gTradeCards(Game_t *, Card_t *, int); //Trades in the number of cards
+Msg_t gAttack(struct LiskMap *, int, int);  //Attack Command
 
 
 #endif

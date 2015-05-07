@@ -5,7 +5,7 @@ CFLAGS=-Wall
 
 #Required by Server
 S_EXE=bin/LiskServer
-S_OBJECTS = obj/Server.o obj/Coms.o obj/Utils.o obj/Map.o obj/Game.o obj/Encode.o
+S_OBJECTS = obj/Server.o obj/Coms.o obj/Utils.o obj/Map.o obj/Game.o obj/Encode.o obj/Messages.o
 
 #Required by Client
 C_EXE=bin/TestClient

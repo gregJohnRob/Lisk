@@ -5,9 +5,7 @@
 #include <stdio.h>
 #include <sys/socket.h>
 
-#include "Encode.h"
 #include "Protocol.h"
-#include "Server.h"
 
 /* Defines */
 
