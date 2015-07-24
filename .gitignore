@@ -2,8 +2,20 @@
 /obj
 /bin
 
+#WCF REST API Build dirs
+/api/Lisk.api/bin
+/api/Lisk.api/obj
+
+/api/Lisk.api.host/bin
+/api/Lisk.api.host/obj
+
 ToDo
 
+#Visual Studio Files
+*.suo
+*.bat
+
+#C Files
 *.o	#Objects
 *.so
 *.exe	#Compiled programs
