@@ -59,21 +59,24 @@ int main(int argc, char *argv[])
     printw("> Attempting connection to LISK Server. Please wait...\n");
     refresh();
 
-    //TODO Needs some for of error checking to make sure we have
-    // IP:Port
-
     char *hostname;
     char *delim = ":";
 
-    // Token will point to hostname.
-    hostname = strtok(argv[1], delim);
+	if (!strchr(argv[1], delim[0])) 
+	{
+		error("Usage: ./client HostName:Port");
+	}
 
+    // Token will point to hostname.
+	
+    hostname = strtok(argv[1], delim);
+	
     portno = atoi(strtok(NULL, delim));
 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0)
     {
-        error("ERROR opening socket");
+        error("ERROR opening socket\n");
     }
 
     //Get ther server name
