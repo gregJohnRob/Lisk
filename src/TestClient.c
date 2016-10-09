@@ -62,10 +62,10 @@ int main(int argc, char *argv[])
     char *hostname;
     char *delim = ":";
 
-	if (!strchr(argv[1], delim[0])) 
-	{
-		error("Usage: ./client HostName:Port");
-	}
+    if (!strchr(argv[1], delim[0])) 
+    {
+        error("Usage: ./client HostName:Port");
+    }
 
     // Token will point to hostname.
 	
